@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ReadExcelFilePocConsoleApp": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\arahk\\OneDrive\\Desktop\\Productivity_2021.xlsx\" \"Dispute_RCM\" 4"
+    }
+  }
+}

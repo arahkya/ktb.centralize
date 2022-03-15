@@ -1,0 +1,87 @@
+﻿<Window x:Class="BranchAdjustor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"        
+        xmlns:local="clr-namespace:BranchAdjustor" d:DataContext="{d:DesignInstance Type=local:MainWindowContext}"
+        mc:Ignorable="d"
+        Icon="graphicloads-100-flat-bank.ico"
+        Title="Ktb Centralize Branch Responsible Adjustor (Ktb-CBRA)" MinHeight="460" MinWidth="394">
+    <Window.Resources>
+        <ResourceDictionary>
+            <local:BooleanInvertConverter x:Key="booInvertConverter"></local:BooleanInvertConverter>
+            <local:NullToBoolConverter x:Key="nullToBoolConverter"></local:NullToBoolConverter>
+            <local:HasAnyToBoolConverter x:Key="hasAnyToBoolConverter"></local:HasAnyToBoolConverter>
+        </ResourceDictionary>
+    </Window.Resources>
+    
+    <Grid IsEnabled="{Binding IsProcessing, Converter={StaticResource booInvertConverter}}">        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition MinHeight="220"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120"></ColumnDefinition>
+            <ColumnDefinition Width="20"></ColumnDefinition>
+            <ColumnDefinition MinWidth="150"></ColumnDefinition>
+            <ColumnDefinition Width="20"></ColumnDefinition>
+            <ColumnDefinition Width="65"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Menu Grid.ColumnSpan="5" Margin="0 0 0 10">
+            <MenuItem Header="_File">
+                <MenuItem Header="Open Dispute _ATM" Command="{Binding OpenFileCommand}" CommandParameter="ATM"></MenuItem>
+                <MenuItem Header="Open Dispute _RCM" Command="{Binding OpenFileCommand}" CommandParameter="ADM"></MenuItem>
+                <MenuItem Header="Open _Branch"></MenuItem>
+                <Separator></Separator>
+                <MenuItem Header="Exit"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Branch">
+                <MenuItem Header="_List"></MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <TextBlock Grid.Row="2" Text="File Name"></TextBlock>
+        <TextBlock Grid.Row="2" Text="{Binding DisputeFilePath}" Grid.Column="2"></TextBlock>
+        
+
+        <TextBlock Grid.Row="3" Text="Worker Number" Grid.ColumnSpan="2"></TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="4" HorizontalAlignment="Center" Text="{Binding ElementName=WorkerNumberSlider, Path=Value}"></TextBlock>
+        <Slider Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Minimum="2" Maximum="10" TickFrequency="1" Value="{Binding WorkerNumber, Mode=TwoWay}" IsEnabled="{Binding IsEnableSlider}" x:Name="WorkerNumberSlider"></Slider>        
+
+        <ProgressBar Grid.Row="4" Grid.ColumnSpan="5" Height="10" IsIndeterminate="{Binding IsProcessing}"></ProgressBar>
+
+        <TextBlock Grid.Row="5">Total branch</TextBlock>
+        <TextBlock Grid.Row="5" Grid.Column="4" Text="{Binding TotalBranchCount}"></TextBlock>
+
+        <TextBlock Grid.Row="6">Branch range</TextBlock>
+        <TextBlock Grid.Row="6" Grid.Column="4" Text="{Binding BranchMinMax}"></TextBlock>
+
+        <TextBlock Grid.Row="7">Branch per worker</TextBlock>
+        <TextBlock Grid.Row="7" Grid.Column="4" Text="{Binding BranchPerWorkerCount}"></TextBlock>
+
+        <TextBlock Grid.Row="8">Dispute per worker</TextBlock>
+        <TextBlock Grid.Row="8" Grid.Column="4"  Text="{Binding DisputePerWorkerCount}"></TextBlock>
+
+        <StackPanel Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Margin="5" Width="50" Command="{Binding LoadDisputeCommand}">Reload</Button>
+            <Button Margin="5" Width="75" Command="{Binding AutoAdjustCommand}">Auto Adjust</Button>
+            <Button Margin="5" Width="50" Command="{Binding AdjustCommand}" CommandParameter="+">+</Button>
+            <Button Margin="5" Width="50" Command="{Binding AdjustCommand}" CommandParameter="-">-</Button>
+        </StackPanel>
+
+        <DataGrid Grid.Row="10" Grid.ColumnSpan="5" AreRowDetailsFrozen="True" CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedItem="{Binding SelectedAdjustBranchResult}" ItemsSource="{Binding Items, Mode=TwoWay}" x:Name="dgAdjustResult">
+        </DataGrid>
+    </Grid>
+
+</Window>
+
