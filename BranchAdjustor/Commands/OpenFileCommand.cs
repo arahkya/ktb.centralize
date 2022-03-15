@@ -36,13 +36,15 @@ namespace BranchAdjustor
             openFileDialog.ShowDialog(MainWindow.Instance);
 
             mainWindowContext.IsProcessing = true;
-            
+            mainWindowContext.StatusMessage = "Read file processing";
+
             mainWindowContext.DisputeFilePath = openFileDialog.FileName;
             mainWindowContext.SheetName = parameter.ToString();
 
             await mainWindowContext.LoadAsync(true);
 
             mainWindowContext.IsProcessing = false;
+            mainWindowContext.StatusMessage = String.Empty;
         }
     }
 }

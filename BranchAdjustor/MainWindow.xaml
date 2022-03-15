@@ -6,16 +6,31 @@
         xmlns:local="clr-namespace:BranchAdjustor" d:DataContext="{d:DesignInstance Type=local:MainWindowContext}"
         mc:Ignorable="d"
         Icon="graphicloads-100-flat-bank.ico"
-        Title="Ktb Centralize Branch Responsible Adjustor (Ktb-CBRA)" MinHeight="460" MinWidth="394">
+        Title="Ktb Centralize Branch Responsible Adjustor (Ktb-CBRA)" MinHeight="600" MinWidth="500" Width="600">
     <Window.Resources>
         <ResourceDictionary>
             <local:BooleanInvertConverter x:Key="booInvertConverter"></local:BooleanInvertConverter>
             <local:NullToBoolConverter x:Key="nullToBoolConverter"></local:NullToBoolConverter>
             <local:HasAnyToBoolConverter x:Key="hasAnyToBoolConverter"></local:HasAnyToBoolConverter>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="Margin" Value="10 5"></Setter>
+            </Style>
+
+            <Style x:Key="manualAdjustMenuItem" TargetType="MenuItem">
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="True">
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
-    
-    <Grid IsEnabled="{Binding IsProcessing, Converter={StaticResource booInvertConverter}}">        
+
+    <Grid IsEnabled="{Binding IsProcessing, Converter={StaticResource booInvertConverter}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
@@ -25,62 +40,67 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition MinHeight="220"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="120"></ColumnDefinition>
             <ColumnDefinition Width="20"></ColumnDefinition>
-            <ColumnDefinition MinWidth="150"></ColumnDefinition>
-            <ColumnDefinition Width="20"></ColumnDefinition>
-            <ColumnDefinition Width="65"></ColumnDefinition>
+            <ColumnDefinition MinWidth="200"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Menu Grid.ColumnSpan="5" Margin="0 0 0 10">
+        <Menu Grid.ColumnSpan="3" Margin="0 0 0 10">
             <MenuItem Header="_File">
                 <MenuItem Header="Open Dispute _ATM" Command="{Binding OpenFileCommand}" CommandParameter="ATM"></MenuItem>
                 <MenuItem Header="Open Dispute _RCM" Command="{Binding OpenFileCommand}" CommandParameter="ADM"></MenuItem>
-                <MenuItem Header="Open _Branch"></MenuItem>
+                <MenuItem Header="_Import Branch"></MenuItem>
                 <Separator></Separator>
-                <MenuItem Header="Exit"></MenuItem>
+                <MenuItem Header="Exit" Click="MenuExit_Click"></MenuItem>
             </MenuItem>
             <MenuItem Header="_Branch">
                 <MenuItem Header="_List"></MenuItem>
             </MenuItem>
         </Menu>
 
-        <TextBlock Grid.Row="2" Text="File Name"></TextBlock>
-        <TextBlock Grid.Row="2" Text="{Binding DisputeFilePath}" Grid.Column="2"></TextBlock>
-        
+        <TextBlock Grid.Row="1" Text="File Name"></TextBlock>
+        <TextBlock Grid.Row="1" Text="{Binding DisputeFilePath}" Grid.Column="2" TextWrapping="WrapWithOverflow"></TextBlock>
 
-        <TextBlock Grid.Row="3" Text="Worker Number" Grid.ColumnSpan="2"></TextBlock>
-        <TextBlock Grid.Row="3" Grid.Column="4" HorizontalAlignment="Center" Text="{Binding ElementName=WorkerNumberSlider, Path=Value}"></TextBlock>
-        <Slider Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Minimum="2" Maximum="10" TickFrequency="1" Value="{Binding WorkerNumber, Mode=TwoWay}" IsEnabled="{Binding IsEnableSlider}" x:Name="WorkerNumberSlider"></Slider>        
-
-        <ProgressBar Grid.Row="4" Grid.ColumnSpan="5" Height="10" IsIndeterminate="{Binding IsProcessing}"></ProgressBar>
-
-        <TextBlock Grid.Row="5">Total branch</TextBlock>
-        <TextBlock Grid.Row="5" Grid.Column="4" Text="{Binding TotalBranchCount}"></TextBlock>
-
-        <TextBlock Grid.Row="6">Branch range</TextBlock>
-        <TextBlock Grid.Row="6" Grid.Column="4" Text="{Binding BranchMinMax}"></TextBlock>
-
-        <TextBlock Grid.Row="7">Branch per worker</TextBlock>
-        <TextBlock Grid.Row="7" Grid.Column="4" Text="{Binding BranchPerWorkerCount}"></TextBlock>
-
-        <TextBlock Grid.Row="8">Dispute per worker</TextBlock>
-        <TextBlock Grid.Row="8" Grid.Column="4"  Text="{Binding DisputePerWorkerCount}"></TextBlock>
-
-        <StackPanel Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Margin="5" Width="50" Command="{Binding LoadDisputeCommand}">Reload</Button>
-            <Button Margin="5" Width="75" Command="{Binding AutoAdjustCommand}">Auto Adjust</Button>
-            <Button Margin="5" Width="50" Command="{Binding AdjustCommand}" CommandParameter="+">+</Button>
-            <Button Margin="5" Width="50" Command="{Binding AdjustCommand}" CommandParameter="-">-</Button>
+        <TextBlock Grid.Row="2" Text="Worker Number" Grid.ColumnSpan="2"></TextBlock>
+        <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal">
+            <Slider Minimum="2" Maximum="10" Width="300" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="0" TickPlacement="Both" HorizontalAlignment="Left" VerticalAlignment="Center" TickFrequency="1" Value="{Binding WorkerNumber, Mode=TwoWay}" IsEnabled="{Binding IsEnableSlider}" x:Name="WorkerNumberSlider"></Slider>
+            <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding ElementName=WorkerNumberSlider, Path=Value}"></TextBlock>
         </StackPanel>
 
-        <DataGrid Grid.Row="10" Grid.ColumnSpan="5" AreRowDetailsFrozen="True" CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedItem="{Binding SelectedAdjustBranchResult}" ItemsSource="{Binding Items, Mode=TwoWay}" x:Name="dgAdjustResult">
+        <TextBlock Grid.Row="3">Total branch</TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding TotalBranchCount}"></TextBlock>
+
+        <TextBlock Grid.Row="4">Branch range</TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding BranchMinMax}"></TextBlock>
+
+        <TextBlock Grid.Row="5">Branch per worker</TextBlock>
+        <TextBlock Grid.Row="5" Grid.Column="2" Text="{Binding BranchPerWorkerCount}"></TextBlock>
+
+        <TextBlock Grid.Row="6">Dispute per worker</TextBlock>
+        <TextBlock Grid.Row="6" Grid.Column="2"  Text="{Binding DisputePerWorkerCount}"></TextBlock>
+
+        <Menu Grid.Row="7" Grid.ColumnSpan="3" Margin="0 10 0 0" Padding="4">
+            <MenuItem Header="Reload" Command="{Binding LoadDisputeCommand}"></MenuItem>
+            <MenuItem Header="Auto Adjust" Command="{Binding AutoAdjustCommand}"></MenuItem>
+            <MenuItem Header="+" Command="{Binding AdjustCommand}" CommandParameter="+" Style="{StaticResource manualAdjustMenuItem}"></MenuItem>
+            <MenuItem Header="-" Command="{Binding AdjustCommand}" CommandParameter="-" Style="{StaticResource manualAdjustMenuItem}"></MenuItem>
+        </Menu>
+        
+        <DataGrid Grid.Row="8" Grid.ColumnSpan="3" SelectionMode="Single" MouseDoubleClick="dgAdjustResult_MouseDoubleClick" AreRowDetailsFrozen="True" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedItem="{Binding SelectedAdjustBranchResult}" ItemsSource="{Binding Items, Mode=TwoWay}" x:Name="dgAdjustResult">
         </DataGrid>
+
+        <StatusBar Grid.Row="9" Grid.ColumnSpan="3">
+            <StatusBarItem HorizontalAlignment="Right">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding StatusMessage}"></TextBlock>
+                    <ProgressBar IsIndeterminate="{Binding IsProcessing}" Height="20" Width="300"></ProgressBar>
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 
 </Window>

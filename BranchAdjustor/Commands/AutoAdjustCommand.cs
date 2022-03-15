@@ -26,23 +26,6 @@ namespace BranchAdjustor
             return hasDispute;
         }
 
-        //private void Recalculate(MainWindowContext context)
-        //{
-        //    for (int i = 0; i < context.Items.Count; i++)
-        //    {
-        //        var queryByBranchMinMax = DisputeRecords.Where(p =>
-        //            !string.IsNullOrEmpty(p.BranchCode) &&
-        //            Convert.ToInt16(p.BranchCode) >= Convert.ToInt16(context.Items[i].MinBranch) && Convert.ToInt16(p.BranchCode) <= Convert.ToInt16(context.Items[i].MaxBranch)
-        //        );
-
-        //        context.Items[i].DisputeCount = queryByBranchMinMax.Count();
-        //        context.Items[i].BranchCount = queryByBranchMinMax.GroupBy(p => p.BranchCode).Count();
-
-        //        if ((i + 1) < context.Items.Count)
-        //            context.Items[i + 1].MinBranch = (Convert.ToInt16(context.Items[i].MaxBranch) + 1).ToString("0000");
-        //    }
-        //}
-
         public async void Execute(object parameter)
         {
             var mainWindowContext = (MainWindowContext)MainWindow.Instance.DataContext;
@@ -50,6 +33,8 @@ namespace BranchAdjustor
             mainWindowContext.IsProcessing = true;
 
             await mainWindowContext.LoadAsync();
+            
+            mainWindowContext.StatusMessage = "Auto adjust branches processing";
 
             await Task.Run(() =>
             {
@@ -83,7 +68,8 @@ namespace BranchAdjustor
                     }
                 }
 
-                mainWindowContext.IsProcessing = false;                
+                mainWindowContext.IsProcessing = false;
+                mainWindowContext.StatusMessage = String.Empty;
             });
         }
     }

@@ -16,10 +16,11 @@ namespace BranchAdjustor
         }
 
         public ObservableCollection<AdjustBranchResult> AdjustBranchResults;
+        public AdjustBranchResult SelectAdjustBranchResultItem;
 
         public bool CanExecute(object parameter)
         {
-            var hasAdjustBranchResults = AdjustBranchResults != null && AdjustBranchResults.Any();
+            var hasAdjustBranchResults = AdjustBranchResults != null && AdjustBranchResults.Any() && SelectAdjustBranchResultItem != null;
 
             return hasAdjustBranchResults;
         }

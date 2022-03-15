@@ -18,8 +18,8 @@ namespace BranchAdjustor
         public event PropertyChangedEventHandler PropertyChanged;
 
         #region Fields
-        private List<DisputeRecord> disputeRecords { get; set; }
-        private AdjustBranchResult selectedAdjustBranchResult { get; set; }
+        private List<DisputeRecord> disputeRecords;
+        private AdjustBranchResult selectedAdjustBranchResult;
         private bool isDataLoaded;
         private bool isProcessing;
         private string sheetName;
@@ -32,6 +32,7 @@ namespace BranchAdjustor
         private string disputeType = "ATM";
         private string disputeFilePath;        
         private bool isEnableSlider;
+        private string statusMessage;
         #endregion
 
         #region Properties
@@ -45,6 +46,8 @@ namespace BranchAdjustor
                 selectedAdjustBranchResult = value;
 
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedAdjustBranchResult)));
+
+                ((AdjustCommand)AdjustCommand).SelectAdjustBranchResultItem = value;
             }
         }
 
@@ -195,6 +198,17 @@ namespace BranchAdjustor
                 isEnableSlider = value;
 
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(IsEnableSlider)));
+            }
+        }
+
+        public string StatusMessage
+        {
+            get => statusMessage;
+            set
+            {
+                statusMessage = value;
+
+                PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(StatusMessage)));
             }
         }
 
