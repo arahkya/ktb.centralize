@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Threading;
 
 #nullable disable
@@ -10,14 +11,15 @@ namespace BranchAdjustor
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static MainWindow Instance;
+        private static Lazy<MainWindow> instance;
+        public static MainWindow Instance => instance.Value;
 
         private MainWindowContext context;
 
         public MainWindow()
         {
             InitializeComponent();
-            Instance = this;
+            instance = new Lazy<MainWindow>(() => this);
 
             this.context = new MainWindowContext();
             this.DataContext = context;
