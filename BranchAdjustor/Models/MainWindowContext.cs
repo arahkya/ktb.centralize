@@ -1,4 +1,5 @@
-﻿using ExcelDataReader;
+﻿using BranchAdjustor.File;
+using ExcelDataReader;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -240,15 +241,13 @@ namespace BranchAdjustor
 
             var excelFileName = this.DisputeFilePath;
             var sheetName = this.SheetName;
+            var disputeFileImporter = new DisputeFileImporter();
 
             await Task.Run(() =>
             {
                 if (!(disputeRecords?.Any() ?? false) || freshReload)
                 {
-                    var disputeDbSet = ReadExcelFile(excelFileName);
-                    var columnsIndex = GetCreateDateColumnIndex(disputeDbSet, sheetName);
-
-                    disputeRecords = new List<DisputeRecord>(Transform(disputeDbSet, sheetName, columnsIndex));
+                    disputeRecords = disputeFileImporter.Import(excelFileName, sheetName).ToList();
                 }
 
                 this.BranchMinMax = disputeRecords.Where(p => !string.IsNullOrEmpty(p.BranchCode)).OrderBy(p => p.BranchCode).First().BranchCode + "-" + disputeRecords.Max(p => p.BranchCode);
@@ -300,88 +299,5 @@ namespace BranchAdjustor
                     Items[i + 1].MinBranch = (Convert.ToInt16(Items[i].MaxBranch) + 1).ToString("0000");
             }
         }
-
-        #region Private functions
-        DataSet ReadExcelFile(string excelFilePath)
-        {
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-
-            using var excelFileStream = File.OpenRead(excelFilePath);
-            using var excelReader = ExcelReaderFactory.CreateReader(excelFileStream);
-
-            var result = excelReader.AsDataSet();
-
-            return result;
-        }
-
-        DataTable GetDataTableBySheetName(DataSet dataset, string sheetName)
-        {
-            var focusDataTable = default(DataTable);
-
-            foreach (DataTable dt in dataset.Tables)
-            {
-                var isFocusSheetName = dt.TableName.ToLower() == sheetName.ToLower();
-
-                if (!isFocusSheetName) continue;
-
-                focusDataTable = dt;
-                break;
-            }
-
-            return focusDataTable;
-        }
-
-        int[] GetCreateDateColumnIndex(DataSet dataset, string sheetName)
-        {
-            var focusDataTable = GetDataTableBySheetName(dataset, sheetName);
-
-            if (focusDataTable == null) return null;
-
-            var columnNameCollection = new List<string> { "CREATE_DATE", "TERM_ID", "Branch", "Adjust UserID" };
-            var columnsIndex = new int[] { -1, -1, -1, -1 };
-            var firstDataRow = focusDataTable.Rows[0];
-
-            for (var i = 0; i <= focusDataTable.Columns.Count; i++)
-            {
-                if (columnsIndex.All(p => p >= 0)) break;
-
-                var columnName = firstDataRow[i].ToString();
-                var focusColumnIndex = columnNameCollection.IndexOf(columnName);
-
-                if (focusColumnIndex != -1)
-                    columnsIndex[focusColumnIndex] = i;
-            }
-
-            return columnsIndex;
-        }
-
-        IEnumerable<DisputeRecord> Transform(DataSet dataSet, string sheetName, int[] columnsIndex)
-        {
-            var disputeRecList = new List<DisputeRecord>();
-            var rowIndex = 0;
-
-            foreach (DataRow row in dataSet.Tables[sheetName].Rows)
-            {
-                if (rowIndex == 0)
-                {
-                    rowIndex++;
-                    continue;
-                }
-
-                var disputeRec = new DisputeRecord();
-
-                disputeRec.CreateDateText = row[columnsIndex[0]].ToString();
-                disputeRec.MachineNumber = row[columnsIndex[1]].ToString();
-                disputeRec.BranchCode = row[columnsIndex[2]].ToString();
-                disputeRec.EmployeeCode = row[columnsIndex[3]].ToString();
-
-                disputeRecList.Add(disputeRec);
-
-                rowIndex++;
-            }
-
-            return disputeRecList;
-        }
-        #endregion
     }
 }
