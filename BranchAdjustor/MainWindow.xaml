@@ -53,13 +53,10 @@
             <MenuItem Header="_File">
                 <MenuItem Header="Open Dispute _ATM" Command="{Binding OpenFileCommand}" CommandParameter="ATM"></MenuItem>
                 <MenuItem Header="Open Dispute _RCM" Command="{Binding OpenFileCommand}" CommandParameter="ADM"></MenuItem>
-                <MenuItem Header="_Import Branch"></MenuItem>
                 <Separator></Separator>
                 <MenuItem Header="Exit" Click="MenuExit_Click"></MenuItem>
             </MenuItem>
-            <MenuItem Header="_Branch">
-                <MenuItem Header="_List"></MenuItem>
-            </MenuItem>
+            <MenuItem Header="_Settings"></MenuItem>
         </Menu>
 
         <TextBlock Grid.Row="1" Text="File Name"></TextBlock>
