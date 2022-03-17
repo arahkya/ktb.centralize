@@ -13,10 +13,6 @@
             <local:NullToBoolConverter x:Key="nullToBoolConverter"></local:NullToBoolConverter>
             <local:HasAnyToBoolConverter x:Key="hasAnyToBoolConverter"></local:HasAnyToBoolConverter>
 
-            <Style TargetType="TextBlock">
-                <Setter Property="Margin" Value="10 5"></Setter>
-            </Style>
-
             <Style x:Key="manualAdjustMenuItem" TargetType="MenuItem">
                 <Style.Triggers>
                     <Trigger Property="IsEnabled" Value="True">
@@ -56,7 +52,9 @@
                 <Separator></Separator>
                 <MenuItem Header="Exit" Click="MenuExit_Click"></MenuItem>
             </MenuItem>
-            <MenuItem Header="_Settings"></MenuItem>
+            <MenuItem Header="_Settings">
+                <MenuItem Header="Dispute Column Mapper" x:Name="dispueColumnMapperMenu" Click="dispueColumnMapperMenu_Click"></MenuItem>
+            </MenuItem>
         </Menu>
 
         <TextBlock Grid.Row="1" Text="File Name"></TextBlock>

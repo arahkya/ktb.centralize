@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Threading;
 
 #nullable disable
 
@@ -19,8 +18,8 @@ namespace BranchAdjustor
         public MainWindow()
         {
             InitializeComponent();
-            instance = new Lazy<MainWindow>(() => this);
 
+            instance = new Lazy<MainWindow>(() => this);
             this.context = new MainWindowContext();
             this.DataContext = context;
         }
@@ -33,6 +32,12 @@ namespace BranchAdjustor
         private void dgAdjustResult_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             this.dgAdjustResult.UnselectAll();
+        }
+
+        private void dispueColumnMapperMenu_Click(object sender, RoutedEventArgs e)
+        {
+            var disputeExcelFileColumnMapper = new DisputeExcelFileColumnMapping();
+            disputeExcelFileColumnMapper.ShowDialog();
         }
     }
 }

@@ -1,17 +1,21 @@
 ﻿using System.Data;
 
+#nullable disable
+
 namespace BranchAdjustor.File
 {
+    using BranchAdjustor.Models;
     using ExcelDataReader;
-    using global::ExcelDataReader;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using System.Linq;
 
     internal class DisputeFileImporter
     {
         DataTable ReadExcel(string excelFilePath, string sheetName)
         {
+            if (excelFilePath == null) return null;
+
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
             using var excelFileStream = File.OpenRead(excelFilePath);
@@ -29,10 +33,30 @@ namespace BranchAdjustor.File
 
         internal IEnumerable<DisputeRecord> Import(string excelFilePath, string sheetName)
         {
+            if (!DisputeExcelFileColumnMapper.Instance.IsValid)
+            {
+                return Enumerable.Empty<DisputeRecord>();
+            }
+
             var dataTable = ReadExcel(excelFilePath, sheetName);
-            var columnNameCollection = new List<string> { "CREATE_DATE", "TERM_ID", "Branch", "Adjust UserID" };
+
+            if(dataTable == null)
+            {
+                return Enumerable.Empty<DisputeRecord>();
+            }
+
             var disputeRecList = new List<DisputeRecord>();
             var rowIndex = 0;
+            var hasColumnInDataTable = new bool[4];
+            hasColumnInDataTable[0] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.CreateDateColumnName);
+            hasColumnInDataTable[1] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.MachineIdColumnName);
+            hasColumnInDataTable[2] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.BranchCodeColumnName);
+            hasColumnInDataTable[3] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.EmployeeCodeColumnName);
+
+            if(!hasColumnInDataTable.All(p => p))
+            {
+                return disputeRecList;
+            }
 
             foreach (DataRow row in dataTable.Rows)
             {
@@ -44,10 +68,10 @@ namespace BranchAdjustor.File
 
                 var disputeRec = new DisputeRecord
                 {
-                    CreateDateText = row[columnNameCollection[0]].ToString(),
-                    MachineNumber = row[columnNameCollection[1]].ToString(),
-                    BranchCode = row[columnNameCollection[2]].ToString(),
-                    EmployeeCode = row[columnNameCollection[3]].ToString()
+                    CreateDateText = row[DisputeExcelFileColumnMapper.Instance.CreateDateColumnName].ToString(),
+                    MachineNumber = row[DisputeExcelFileColumnMapper.Instance.MachineIdColumnName].ToString(),
+                    BranchCode = row[DisputeExcelFileColumnMapper.Instance.BranchCodeColumnName].ToString(),
+                    EmployeeCode = row[DisputeExcelFileColumnMapper.Instance.EmployeeCodeColumnName].ToString()
                 };
 
                 disputeRecList.Add(disputeRec);

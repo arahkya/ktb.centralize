@@ -1,0 +1,42 @@
+﻿<Window x:Class="BranchAdjustor.DisputeExcelFileColumnMapping"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BranchAdjustor"
+        mc:Ignorable="d"
+        Title="Dispute Column Mapping" MaxHeight="185" MaxWidth="400" WindowStyle="ToolWindow" ResizeMode="NoResize">
+    <Window.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TextBox">
+                <Setter Property="Margin" Value="5 5 8 5"></Setter>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30*"></ColumnDefinition>
+            <ColumnDefinition Width="70*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock Grid.Row="0" Text="Fields" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
+        <TextBlock Grid.Row="1" Text="Create Date"></TextBlock>
+        <TextBlock Grid.Row="2" Text="Machine Id"></TextBlock>
+        <TextBlock Grid.Row="3" Text="Branch Code"></TextBlock>
+        <TextBlock Grid.Row="4" Text="Employee Code"></TextBlock>
+
+        <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Text="Excel Columns" FontWeight="Bold"></TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CreateDateColumnName}"></TextBox>
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MachineIdColumnName}"></TextBox>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding BranchCodeColumnName}"></TextBox>
+        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding EmployeeCodeColumnName}"></TextBox>
+    </Grid>
+</Window>

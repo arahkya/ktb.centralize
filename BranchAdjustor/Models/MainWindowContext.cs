@@ -250,6 +250,8 @@ namespace BranchAdjustor
                     disputeRecords = disputeFileImporter.Import(excelFileName, sheetName).ToList();
                 }
 
+                if (disputeRecords.Count == 0) return;
+
                 this.BranchMinMax = disputeRecords.Where(p => !string.IsNullOrEmpty(p.BranchCode)).OrderBy(p => p.BranchCode).First().BranchCode + "-" + disputeRecords.Max(p => p.BranchCode);
                 this.DisputePerWorkerCount = disputeRecords.Count / this.WorkerNumber;
                 this.TotalBranchCount = disputeRecords.DistinctBy(p => p.BranchCode).Count();

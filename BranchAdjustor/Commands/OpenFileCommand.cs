@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using BranchAdjustor.Models;
+using Microsoft.Win32;
 using System;
 using System.Windows.Input;
 
@@ -16,7 +17,7 @@ namespace BranchAdjustor
 
         public bool CanExecute(object parameter)
         {
-            return true;
+            return DisputeExcelFileColumnMapper.Instance.IsValid;
         }
 
         public async void Execute(object parameter)
