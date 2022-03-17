@@ -41,7 +41,7 @@ namespace BranchAdjustor
 
         private async void BgWorker_DoWork(object? sender, DoWorkEventArgs e)
         {
-            if (DisputeExcelFileColumnMapper.Instance.IsValid)
+            if (!DisputeExcelFileColumnMapper.Instance.IsValid)
             {
                 return;
             }

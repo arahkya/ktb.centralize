@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Windows;
 
 #nullable disable
@@ -38,6 +39,11 @@ namespace BranchAdjustor
         {
             var disputeExcelFileColumnMapper = new DisputeExcelFileColumnMapping();
             disputeExcelFileColumnMapper.ShowDialog();
+        }
+
+        public void ShowAlert(string message)
+        {
+            MessageBox.Show(message, "Error",MessageBoxButton.OK,MessageBoxImage.Error, MessageBoxResult.OK,MessageBoxOptions.ServiceNotification);
         }
     }
 }

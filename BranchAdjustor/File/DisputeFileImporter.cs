@@ -40,21 +40,27 @@ namespace BranchAdjustor.File
 
             var dataTable = ReadExcel(excelFilePath, sheetName);
 
-            if(dataTable == null)
+            if (dataTable == null)
             {
                 return Enumerable.Empty<DisputeRecord>();
             }
 
             var disputeRecList = new List<DisputeRecord>();
             var rowIndex = 0;
-            var hasColumnInDataTable = new bool[4];
-            hasColumnInDataTable[0] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.CreateDateColumnName);
-            hasColumnInDataTable[1] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.MachineIdColumnName);
-            hasColumnInDataTable[2] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.BranchCodeColumnName);
-            hasColumnInDataTable[3] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.EmployeeCodeColumnName);
+            var hasColumnInDataTable = new string[4];
+            var notContainMessage = $" not contain on sheet {sheetName} within {excelFilePath}.";
 
-            if(!hasColumnInDataTable.All(p => p))
+            hasColumnInDataTable[0] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.CreateDateColumnName) ? string.Empty : DisputeExcelFileColumnMapper.Instance.CreateDateColumnName;
+            hasColumnInDataTable[1] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.MachineIdColumnName) ? string.Empty : DisputeExcelFileColumnMapper.Instance.MachineIdColumnName;
+            hasColumnInDataTable[2] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.BranchCodeColumnName) ? string.Empty : DisputeExcelFileColumnMapper.Instance.BranchCodeColumnName;
+            hasColumnInDataTable[3] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.EmployeeCodeColumnName) ? string.Empty : DisputeExcelFileColumnMapper.Instance.EmployeeCodeColumnName;
+
+            if (!hasColumnInDataTable.All(p => !string.IsNullOrEmpty(p)))
             {
+                var alertMessage = string.Join(',', hasColumnInDataTable.Where(p => !string.IsNullOrEmpty(p)));
+
+                MainWindow.Instance.ShowAlert(alertMessage + notContainMessage);
+
                 return disputeRecList;
             }
 
