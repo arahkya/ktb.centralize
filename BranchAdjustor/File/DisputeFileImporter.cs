@@ -14,7 +14,7 @@ namespace BranchAdjustor.File
     {
         DataTable ReadExcel(string excelFilePath, string sheetName)
         {
-            if (excelFilePath == null) return null;
+            if (string.IsNullOrEmpty(excelFilePath)) return null;
 
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
@@ -27,6 +27,11 @@ namespace BranchAdjustor.File
             };
             var dataSet = excelReader.AsDataSet(excelDataSetConfiguration);
             var dataTable = dataSet.Tables[sheetName];
+
+            if (dataTable == null)
+            {
+                MainWindow.Instance.ShowAlert($"Has no {sheetName} in excel file {excelFilePath}");
+            }
 
             return dataTable;
         }

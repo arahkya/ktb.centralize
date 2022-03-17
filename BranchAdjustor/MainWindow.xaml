@@ -53,8 +53,7 @@
                 <MenuItem Header="Exit" Click="MenuExit_Click"></MenuItem>
             </MenuItem>
             <MenuItem Header="_Settings">
-                <MenuItem Header="Dispute ATM Column Mapper" x:Name="dispueATMColumnMapperMenu" Click="dispueATMColumnMapperMenu_Click"></MenuItem>
-                <MenuItem Header="Dispute ADM Column Mapper" x:Name="dispueADMColumnMapperMenu" Click="dispueADMColumnMapperMenu_Click"></MenuItem>
+                <MenuItem Header="Excel Columns Mapper" x:Name="dispueATMColumnMapperMenu" Click="dispueATMColumnMapperMenu_Click"></MenuItem>
             </MenuItem>
         </Menu>
 
