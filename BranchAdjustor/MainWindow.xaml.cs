@@ -35,7 +35,13 @@ namespace BranchAdjustor
             this.dgAdjustResult.UnselectAll();
         }
 
-        private void dispueColumnMapperMenu_Click(object sender, RoutedEventArgs e)
+        private void dispueATMColumnMapperMenu_Click(object sender, RoutedEventArgs e)
+        {
+            var disputeExcelFileColumnMapper = new DisputeExcelFileColumnMapping();
+            disputeExcelFileColumnMapper.ShowDialog();
+        }
+
+        private void dispueADMColumnMapperMenu_Click(object sender, RoutedEventArgs e)
         {
             var disputeExcelFileColumnMapper = new DisputeExcelFileColumnMapping();
             disputeExcelFileColumnMapper.ShowDialog();
@@ -45,5 +51,7 @@ namespace BranchAdjustor
         {
             MessageBox.Show(message, "Error",MessageBoxButton.OK,MessageBoxImage.Error, MessageBoxResult.OK,MessageBoxOptions.ServiceNotification);
         }
+
+        
     }
 }

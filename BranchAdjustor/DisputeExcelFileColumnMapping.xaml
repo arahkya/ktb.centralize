@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BranchAdjustor"
         mc:Ignorable="d"
-        Title="Dispute Column Mapping" MaxHeight="185" MaxWidth="400" WindowStyle="ToolWindow" ResizeMode="NoResize">
+        Title="Dispute Column Mapping" Height="290" Width="520" WindowStyle="ToolWindow" ResizeMode="NoResize">
     <Window.Resources>
         <ResourceDictionary>
             <Style TargetType="TextBox">
@@ -20,23 +20,62 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="30*"></ColumnDefinition>
-            <ColumnDefinition Width="70*"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        
-        <TextBlock Grid.Row="0" Text="Fields" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
-        <TextBlock Grid.Row="1" Text="Create Date"></TextBlock>
-        <TextBlock Grid.Row="2" Text="Machine Id"></TextBlock>
-        <TextBlock Grid.Row="3" Text="Branch Code"></TextBlock>
-        <TextBlock Grid.Row="4" Text="Employee Code"></TextBlock>
+            <ColumnDefinition Width="110"></ColumnDefinition>
+            <ColumnDefinition Width="130"></ColumnDefinition>
 
-        <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Text="Excel Columns" FontWeight="Bold"></TextBlock>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CreateDateColumnName}"></TextBox>
-        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MachineIdColumnName}"></TextBox>
-        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding BranchCodeColumnName}"></TextBox>
-        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding EmployeeCodeColumnName}"></TextBox>
+            <ColumnDefinition Width="20"></ColumnDefinition>
+
+            <ColumnDefinition Width="110"></ColumnDefinition>
+            <ColumnDefinition Width="130"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Frame Grid.ColumnSpan="2" Margin="10 0" BorderThickness="0 0 0 0.5" BorderBrush="LightGray"></Frame>
+        <TextBlock Text="ATM" FontWeight="Bold" Margin="10"></TextBlock>
+
+        <TextBlock Grid.Row="1" Text="Sheet Name" Margin="10 15 8 5"></TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" Margin="5 15 8 5" Text="{Binding ATMSheetName}"></TextBox>
+
+        <TextBlock Grid.Row="2" Text="Fields" Margin="0 15 0 20" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
+        <TextBlock Grid.Row="3" Text="Create Date"></TextBlock>
+        <TextBlock Grid.Row="4" Text="Machine Id"></TextBlock>
+        <TextBlock Grid.Row="5" Text="Branch Code"></TextBlock>
+        <TextBlock Grid.Row="6" Text="Employee Code"></TextBlock>
+
+        <TextBlock Grid.Row="2" Grid.Column="1" Margin="0 15 0 20" HorizontalAlignment="Center" Text="Excel Columns" FontWeight="Bold"></TextBlock>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding ATMCreateDateColumnName}"></TextBox>
+        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding ATMMachineIdColumnName}"></TextBox>
+        <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding ATMBranchCodeColumnName}"></TextBox>
+        <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding ATMEmployeeCodeColumnName}"></TextBox>
+
+        <Frame Grid.ColumnSpan="2" Grid.Column="3" Margin="11,0,9,38" BorderThickness="0 0 0 0.5" BorderBrush="LightGray" Grid.RowSpan="2"></Frame>
+        <TextBlock Text="ADM" Grid.Column="3" FontWeight="Bold" Margin="10"></TextBlock>
+
+        <TextBlock Grid.Row="1" Grid.Column="3" Text="Sheet Name" Margin="10 15 8 5"></TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="4" Margin="5 15 8 5" Text="{Binding ADMSheetName}"></TextBox>
+
+        <TextBlock Grid.Row="2" Grid.Column="3" Text="Fields" Margin="0 15 0 20" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="3" Text="Create Date"></TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="3" Text="Machine Id"></TextBlock>
+        <TextBlock Grid.Row="5" Grid.Column="3" Text="Branch Code"></TextBlock>
+        <TextBlock Grid.Row="6" Grid.Column="3" Text="Employee Code"></TextBlock>
+
+        <TextBlock Grid.Row="2" Grid.Column="4" Margin="0 15 0 20" HorizontalAlignment="Center" Text="Excel Columns" FontWeight="Bold"></TextBlock>
+        <TextBox Grid.Row="3" Grid.Column="4" Text="{Binding ADMCreateDateColumnName}"></TextBox>
+        <TextBox Grid.Row="4" Grid.Column="4" Text="{Binding ADMMachineIdColumnName}"></TextBox>
+        <TextBox Grid.Row="5" Grid.Column="4" Text="{Binding ADMBranchCodeColumnName}"></TextBox>
+        <TextBox Grid.Row="6" Grid.Column="4" Text="{Binding ADMEmployeeCodeColumnName}"></TextBox>
     </Grid>
 </Window>

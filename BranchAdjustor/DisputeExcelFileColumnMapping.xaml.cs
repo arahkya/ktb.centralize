@@ -27,7 +27,7 @@ namespace BranchAdjustor
         {
             InitializeComponent();
 
-            this.DataContext = DisputeExcelFileColumnMapper.Instance;
+            this.DataContext = SettingContext.Instance;
         }
 
         protected override void OnClosed(EventArgs e)
@@ -41,16 +41,12 @@ namespace BranchAdjustor
 
         private async void BgWorker_DoWork(object? sender, DoWorkEventArgs e)
         {
-            if (!DisputeExcelFileColumnMapper.Instance.IsValid)
-            {
-                return;
-            }
-
-            var columns = $"{DisputeExcelFileColumnMapper.Instance.CreateDateColumnName}|{DisputeExcelFileColumnMapper.Instance.MachineIdColumnName}|{DisputeExcelFileColumnMapper.Instance.BranchCodeColumnName}|{DisputeExcelFileColumnMapper.Instance.EmployeeCodeColumnName}";
+            //var columns = $"{SettingContext.Instance.ADMCreateDateColumnName}|{SettingContext.Instance.ADMMachineIdColumnName}|{SettingContext.Instance.ADMBranchCodeColumnName}|{SettingContext.Instance.ADMEmployeeCodeColumnName}";
+            var json = JsonSerializer.Serialize(SettingContext.Instance);
             var filePath = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "config.ktb");
             var sw = System.IO.File.CreateText(filePath);
 
-            await sw.WriteAsync(columns);
+            await sw.WriteAsync(json);
             await sw.FlushAsync();
 
             sw.Close();

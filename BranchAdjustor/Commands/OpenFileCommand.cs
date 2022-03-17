@@ -15,9 +15,17 @@ namespace BranchAdjustor
             remove { CommandManager.RequerySuggested -= value; }
         }
 
+        public string DisputeType;
+
         public bool CanExecute(object parameter)
         {
-            return DisputeExcelFileColumnMapper.Instance.IsValid;
+            if (parameter.ToString() == "ADM")
+                return SettingContext.Instance.IsADMValid;
+
+            if (parameter.ToString() == "ATM")
+                return SettingContext.Instance.IsATMValid;
+
+            return false;
         }
 
         public async void Execute(object parameter)
@@ -40,9 +48,10 @@ namespace BranchAdjustor
             mainWindowContext.StatusMessage = "Read file processing";
 
             mainWindowContext.DisputeFilePath = openFileDialog.FileName;
-            mainWindowContext.SheetName = parameter.ToString();
+            mainWindowContext.DisputeType = parameter.ToString();
+            //mainWindowContext.SheetName = parameter.ToString();
 
-            await mainWindowContext.LoadAsync(true);
+            await mainWindowContext.LoadAsync(((MainWindowContext)MainWindow.Instance.DataContext).DisputeType, true);
 
             mainWindowContext.IsProcessing = false;
             mainWindowContext.StatusMessage = String.Empty;

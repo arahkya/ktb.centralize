@@ -31,7 +31,7 @@ namespace BranchAdjustor
         private int totalBranchCount;
         private double autoAdjustPercent;
         private string disputeType = "ATM";
-        private string disputeFilePath;        
+        private string disputeFilePath;
         private bool isEnableSlider;
         private string statusMessage;
         #endregion
@@ -212,7 +212,6 @@ namespace BranchAdjustor
                 PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(StatusMessage)));
             }
         }
-
         #endregion
 
         #region Commands
@@ -235,7 +234,7 @@ namespace BranchAdjustor
             AdjustCommand = new AdjustCommand();
         }
 
-        public async Task LoadAsync(bool freshReload = false)
+        public async Task LoadAsync(string disputeType, bool freshReload = false)
         {
             this.Items.Clear();
 
@@ -247,7 +246,10 @@ namespace BranchAdjustor
             {
                 if (!(disputeRecords?.Any() ?? false) || freshReload)
                 {
-                    disputeRecords = disputeFileImporter.Import(excelFileName, sheetName).ToList();
+                    if (disputeType == "ADM")
+                        disputeRecords = disputeFileImporter.ImportADM(excelFileName).ToList();
+                    else
+                        disputeRecords = disputeFileImporter.ImportATM(excelFileName).ToList();
                 }
 
                 if (disputeRecords.Count == 0) return;
@@ -279,7 +281,9 @@ namespace BranchAdjustor
                     IsEnableSlider = true;
                     IsDataLoaded = this.Items.Any();
                     ((LoadDisputeCommand)LoadDisputeCommand).IsDataLoaded = true;
+                    ((LoadDisputeCommand)LoadDisputeCommand).DisputeType = DisputeType;
                     ((AutoAdjustCommand)AutoAdjustCommand).DisputeRecords = disputeRecords;
+                    ((AutoAdjustCommand)AutoAdjustCommand).DisputeType = DisputeType;
                     ((AdjustCommand)AdjustCommand).AdjustBranchResults = Items;
                 });
             });

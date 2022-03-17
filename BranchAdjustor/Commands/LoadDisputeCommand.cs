@@ -14,6 +14,7 @@ namespace BranchAdjustor
         }
 
         public bool IsDataLoaded;
+        public string DisputeType;
 
         public bool CanExecute(object parameter)
         {
@@ -26,7 +27,7 @@ namespace BranchAdjustor
             
             mainWindowContext.IsProcessing = true;
 
-            await mainWindowContext.LoadAsync();
+            await mainWindowContext.LoadAsync(DisputeType);
 
             mainWindowContext.IsProcessing = false;
         }

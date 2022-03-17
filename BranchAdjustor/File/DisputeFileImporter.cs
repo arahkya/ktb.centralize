@@ -31,14 +31,14 @@ namespace BranchAdjustor.File
             return dataTable;
         }
 
-        internal IEnumerable<DisputeRecord> Import(string excelFilePath, string sheetName)
+        internal IEnumerable<DisputeRecord> ImportATM(string excelFilePath)
         {
-            if (!DisputeExcelFileColumnMapper.Instance.IsValid)
+            if (!SettingContext.Instance.IsADMValid)
             {
                 return Enumerable.Empty<DisputeRecord>();
             }
 
-            var dataTable = ReadExcel(excelFilePath, sheetName);
+            var dataTable = ReadExcel(excelFilePath, SettingContext.Instance.ATMSheetName);
 
             if (dataTable == null)
             {
@@ -48,12 +48,12 @@ namespace BranchAdjustor.File
             var disputeRecList = new List<DisputeRecord>();
             var rowIndex = 0;
             var hasColumnInDataTable = new string[4];
-            var notContainMessage = $" not contain on sheet {sheetName} within {excelFilePath}.";
+            var notContainMessage = $" not contain on sheet {SettingContext.Instance.ATMSheetName} within {excelFilePath}.";
 
-            hasColumnInDataTable[0] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.CreateDateColumnName) ? string.Empty : DisputeExcelFileColumnMapper.Instance.CreateDateColumnName;
-            hasColumnInDataTable[1] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.MachineIdColumnName) ? string.Empty : DisputeExcelFileColumnMapper.Instance.MachineIdColumnName;
-            hasColumnInDataTable[2] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.BranchCodeColumnName) ? string.Empty : DisputeExcelFileColumnMapper.Instance.BranchCodeColumnName;
-            hasColumnInDataTable[3] = dataTable.Columns.Contains(DisputeExcelFileColumnMapper.Instance.EmployeeCodeColumnName) ? string.Empty : DisputeExcelFileColumnMapper.Instance.EmployeeCodeColumnName;
+            hasColumnInDataTable[0] = dataTable.Columns.Contains(SettingContext.Instance.ATMCreateDateColumnName) ? string.Empty : SettingContext.Instance.ATMCreateDateColumnName;
+            hasColumnInDataTable[1] = dataTable.Columns.Contains(SettingContext.Instance.ATMMachineIdColumnName) ? string.Empty : SettingContext.Instance.ATMMachineIdColumnName;
+            hasColumnInDataTable[2] = dataTable.Columns.Contains(SettingContext.Instance.ATMBranchCodeColumnName) ? string.Empty : SettingContext.Instance.ATMBranchCodeColumnName;
+            hasColumnInDataTable[3] = dataTable.Columns.Contains(SettingContext.Instance.ATMEmployeeCodeColumnName) ? string.Empty : SettingContext.Instance.ATMEmployeeCodeColumnName;
 
             if (!hasColumnInDataTable.All(p => !string.IsNullOrEmpty(p)))
             {
@@ -74,10 +74,67 @@ namespace BranchAdjustor.File
 
                 var disputeRec = new DisputeRecord
                 {
-                    CreateDateText = row[DisputeExcelFileColumnMapper.Instance.CreateDateColumnName].ToString(),
-                    MachineNumber = row[DisputeExcelFileColumnMapper.Instance.MachineIdColumnName].ToString(),
-                    BranchCode = row[DisputeExcelFileColumnMapper.Instance.BranchCodeColumnName].ToString(),
-                    EmployeeCode = row[DisputeExcelFileColumnMapper.Instance.EmployeeCodeColumnName].ToString()
+                    CreateDateText = row[SettingContext.Instance.ATMCreateDateColumnName].ToString(),
+                    MachineNumber = row[SettingContext.Instance.ATMMachineIdColumnName].ToString(),
+                    BranchCode = row[SettingContext.Instance.ATMBranchCodeColumnName].ToString(),
+                    EmployeeCode = row[SettingContext.Instance.ATMEmployeeCodeColumnName].ToString()
+                };
+
+                disputeRecList.Add(disputeRec);
+
+                rowIndex++;
+            }
+
+            return disputeRecList;
+        }
+
+        internal IEnumerable<DisputeRecord> ImportADM(string excelFilePath)
+        {
+            if (!SettingContext.Instance.IsADMValid)
+            {
+                return Enumerable.Empty<DisputeRecord>();
+            }
+
+            var dataTable = ReadExcel(excelFilePath, SettingContext.Instance.ADMSheetName);
+
+            if (dataTable == null)
+            {
+                return Enumerable.Empty<DisputeRecord>();
+            }
+
+            var disputeRecList = new List<DisputeRecord>();
+            var rowIndex = 0;
+            var hasColumnInDataTable = new string[4];
+            var notContainMessage = $" not contain on sheet {SettingContext.Instance.ADMSheetName} within {excelFilePath}.";
+
+            hasColumnInDataTable[0] = dataTable.Columns.Contains(SettingContext.Instance.ADMCreateDateColumnName) ? string.Empty : SettingContext.Instance.ADMCreateDateColumnName;
+            hasColumnInDataTable[1] = dataTable.Columns.Contains(SettingContext.Instance.ADMMachineIdColumnName) ? string.Empty : SettingContext.Instance.ADMMachineIdColumnName;
+            hasColumnInDataTable[2] = dataTable.Columns.Contains(SettingContext.Instance.ADMBranchCodeColumnName) ? string.Empty : SettingContext.Instance.ADMBranchCodeColumnName;
+            hasColumnInDataTable[3] = dataTable.Columns.Contains(SettingContext.Instance.ADMEmployeeCodeColumnName) ? string.Empty : SettingContext.Instance.ADMEmployeeCodeColumnName;
+
+            if (!hasColumnInDataTable.All(p => string.IsNullOrEmpty(p)))
+            {
+                var alertMessage = string.Join(',', hasColumnInDataTable.Where(p => !string.IsNullOrEmpty(p)));
+
+                MainWindow.Instance.ShowAlert(alertMessage + notContainMessage);
+
+                return disputeRecList;
+            }
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                if (rowIndex == 0)
+                {
+                    rowIndex++;
+                    continue;
+                }
+
+                var disputeRec = new DisputeRecord
+                {
+                    CreateDateText = row[SettingContext.Instance.ADMCreateDateColumnName].ToString(),
+                    MachineNumber = row[SettingContext.Instance.ADMMachineIdColumnName].ToString(),
+                    BranchCode = row[SettingContext.Instance.ADMBranchCodeColumnName].ToString(),
+                    EmployeeCode = row[SettingContext.Instance.ADMEmployeeCodeColumnName].ToString()
                 };
 
                 disputeRecList.Add(disputeRec);

@@ -18,6 +18,7 @@ namespace BranchAdjustor
         }
 
         public List<DisputeRecord> DisputeRecords;
+        public string DisputeType;
 
         public bool CanExecute(object parameter)
         {
@@ -32,7 +33,7 @@ namespace BranchAdjustor
 
             mainWindowContext.IsProcessing = true;
 
-            await mainWindowContext.LoadAsync();
+            await mainWindowContext.LoadAsync(DisputeType);
             
             mainWindowContext.StatusMessage = "Auto adjust branches processing";
 
