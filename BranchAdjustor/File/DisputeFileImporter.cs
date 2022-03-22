@@ -60,7 +60,7 @@ namespace BranchAdjustor.File
             hasColumnInDataTable[2] = dataTable.Columns.Contains(SettingContext.Instance.ATMBranchCodeColumnName) ? string.Empty : SettingContext.Instance.ATMBranchCodeColumnName;
             hasColumnInDataTable[3] = dataTable.Columns.Contains(SettingContext.Instance.ATMEmployeeCodeColumnName) ? string.Empty : SettingContext.Instance.ATMEmployeeCodeColumnName;
 
-            if (!hasColumnInDataTable.All(p => !string.IsNullOrEmpty(p)))
+            if (!hasColumnInDataTable.All(p => string.IsNullOrEmpty(p)))
             {
                 var alertMessage = string.Join(',', hasColumnInDataTable.Where(p => !string.IsNullOrEmpty(p)));
 
