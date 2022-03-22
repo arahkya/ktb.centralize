@@ -64,6 +64,7 @@ namespace BranchAdjustor
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisputeCount)));
             }
         }
+
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

@@ -1,11 +1,13 @@
 ﻿using BranchAdjustor.Commands;
 using BranchAdjustor.File;
+using BranchAdjustor.Models;
 using ExcelDataReader;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,6 +41,8 @@ namespace BranchAdjustor
 
         #region Properties
         public ObservableCollection<AdjustBranchResult> Items { get; set; }
+
+        public ObservableCollection<CompareToPreviousMonth> CompareToPreviousMonths { get; set; }
 
         public AdjustBranchResult SelectedAdjustBranchResult
         {
@@ -231,6 +235,7 @@ namespace BranchAdjustor
         {
             autoAdjustPercent = 0.5f;
             Items = new ObservableCollection<AdjustBranchResult>();
+            CompareToPreviousMonths = new ObservableCollection<CompareToPreviousMonth>();
             OpenFileCommand = new OpenFileCommand();
             LoadDisputeCommand = new LoadDisputeCommand();
             AutoAdjustCommand = new AutoAdjustCommand();
@@ -282,13 +287,18 @@ namespace BranchAdjustor
                         this.Items.Add(adjustBranchResult);
                     }
 
+                    PrepareCompareToPreviousMonths();
+
                     IsEnableSlider = true;
                     IsDataLoaded = this.Items.Any();
                     ((LoadDisputeCommand)LoadDisputeCommand).IsDataLoaded = true;
                     ((LoadDisputeCommand)LoadDisputeCommand).DisputeType = DisputeType;
                     ((AutoAdjustCommand)AutoAdjustCommand).DisputeRecords = disputeRecords;
                     ((AutoAdjustCommand)AutoAdjustCommand).DisputeType = DisputeType;
+                    ((AutoAdjustCommand)AutoAdjustCommand).CompareToPreviousMonths = CompareToPreviousMonths;
                     ((AdjustCommand)AdjustCommand).AdjustBranchResults = Items;
+                    ((AdjustCommand)AdjustCommand).DisputeRecords = disputeRecords;
+                    ((AdjustCommand)AdjustCommand).CompareToPreviousMonths = CompareToPreviousMonths;
                     ((CopyToClipboardCommand)CopyToClipboardCommand).AdjustBranchResults = Items;
                 });
             });
@@ -308,6 +318,42 @@ namespace BranchAdjustor
 
                 if ((i + 1) < Items.Count)
                     Items[i + 1].MinBranch = (Convert.ToInt16(Items[i].MaxBranch) + 1).ToString("0000");
+            }
+        }
+
+        public void PrepareCompareToPreviousMonths()
+        {
+            var disputeGroupByYearMonth = disputeRecords.OrderBy(p => p.CreateDate).GroupBy(p => new { p.CreateDate.Year, p.CreateDate.Month });
+            CompareToPreviousMonths.Clear();
+
+            foreach (var item in disputeGroupByYearMonth)
+            {
+                var startDate = new DateTime(item.Key.Year, item.Key.Month, 1, 0, 0, 0);
+                var endDate = new DateTime(item.Key.Year, item.Key.Month, DateTime.DaysInMonth(item.Key.Year, item.Key.Month), 0, 0, 0);
+
+                var compareToPreviousMonthsSet = new List<CompareToPreviousMonth>();
+
+                foreach (var adjustItem in Items)
+                {
+                    var disputeCount = disputeRecords.Where(p => (p.CreateDate > startDate && p.CreateDate <= endDate)
+                    && (Convert.ToInt16(p.BranchCode) >= Convert.ToInt16(adjustItem.MinBranch)
+                    && Convert.ToInt16(p.BranchCode) <= Convert.ToInt16(adjustItem.MaxBranch))).Count();
+
+                    compareToPreviousMonthsSet.Add(new CompareToPreviousMonth
+                    {
+                        DisputeCount = disputeCount,
+                        Year = item.Key.Year,
+                        Month = item.Key.Month,
+                        Worker = adjustItem.Worker
+                    });
+                }
+
+                foreach (var itemSet in compareToPreviousMonthsSet)
+                {
+                    itemSet.Percentage = Math.Round((Convert.ToDouble(itemSet.DisputeCount) / compareToPreviousMonthsSet.Sum(p => p.DisputeCount)) * 100, 2);
+
+                    CompareToPreviousMonths.Add(itemSet);
+                }
             }
         }
     }

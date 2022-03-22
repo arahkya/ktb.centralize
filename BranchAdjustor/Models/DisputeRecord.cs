@@ -11,7 +11,7 @@ namespace BranchAdjustor
         {
             get
             {
-                return DateTime.ParseExact(CreateDateText, "yyyy/m/d", null);
+                return DateTime.ParseExact(CreateDateText, "yyyy/M/d", null);
             }
         }
         public string MachineNumber { get; set; }

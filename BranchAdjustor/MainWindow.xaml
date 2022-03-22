@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:BranchAdjustor" d:DataContext="{d:DesignInstance Type=local:MainWindowContext}"
         mc:Ignorable="d"
         Icon="graphicloads-100-flat-bank.ico"
-        Title="Ktb Centralize Branch Responsible Adjustor (Ktb-CBRA)" MinHeight="600" MinWidth="500" Width="600">
+        Title="Ktb Centralize Branch Responsible Adjustor (Ktb-CBRA)" MinHeight="600" MinWidth="860" Width="860" WindowState="Maximized">
     <Window.Resources>
         <ResourceDictionary>
             <local:BooleanInvertConverter x:Key="booInvertConverter"></local:BooleanInvertConverter>
@@ -36,16 +36,17 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition MinHeight="220"></RowDefinition>
+            <RowDefinition MinHeight="220"></RowDefinition>            
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="120"></ColumnDefinition>
             <ColumnDefinition Width="20"></ColumnDefinition>
             <ColumnDefinition MinWidth="200"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <Menu Grid.ColumnSpan="3" Margin="0 0 0 10">
+        <Menu Grid.ColumnSpan="4" Margin="0">
             <MenuItem Header="_File">
                 <MenuItem Header="Open Dispute _ATM" Command="{Binding OpenFileCommand}" CommandParameter="ATM"></MenuItem>
                 <MenuItem Header="Open Dispute _RCM" Command="{Binding OpenFileCommand}" CommandParameter="ADM"></MenuItem>
@@ -81,7 +82,7 @@
         <Menu Grid.Row="7" Grid.ColumnSpan="3" Margin="0 10 0 0" Padding="4">
             <MenuItem Header="Reload" Command="{Binding LoadDisputeCommand}"></MenuItem>
             <MenuItem Header="Auto Adjust" Command="{Binding AutoAdjustCommand}"></MenuItem>
-            <MenuItem Header="Copy to Clipboard" Command="{Binding CopyToClipboardCommand}"></MenuItem>
+            <MenuItem Header="Copy to Clipboard" Command="{Binding CopyToClipboardCommand}"></MenuItem>            
             <MenuItem Header="+" Command="{Binding AdjustCommand}" CommandParameter="+" Style="{StaticResource manualAdjustMenuItem}"></MenuItem>
             <MenuItem Header="-" Command="{Binding AdjustCommand}" CommandParameter="-" Style="{StaticResource manualAdjustMenuItem}"></MenuItem>            
         </Menu>
@@ -89,7 +90,10 @@
         <DataGrid Grid.Row="8" Grid.ColumnSpan="3" SelectionMode="Single" MouseDoubleClick="dgAdjustResult_MouseDoubleClick" AreRowDetailsFrozen="True" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedItem="{Binding SelectedAdjustBranchResult}" ItemsSource="{Binding Items, Mode=TwoWay}" x:Name="dgAdjustResult">
         </DataGrid>
 
-        <StatusBar Grid.Row="9" Grid.ColumnSpan="3">
+        <DataGrid Grid.Row="1" Grid.RowSpan="11" Grid.Column="3" Margin="10 0 0 0" SelectionMode="Extended" AreRowDetailsFrozen="True" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding CompareToPreviousMonths, Mode=TwoWay}">
+        </DataGrid>
+
+        <StatusBar Grid.Row="10" Grid.ColumnSpan="3">
             <StatusBarItem>                
                 <TextBlock Text="{Binding DisputeType, StringFormat={}Process on {0}}">
                     <TextBlock.Style>
