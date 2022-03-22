@@ -322,26 +322,10 @@ namespace BranchAdjustor
                 Items[i].DisputeCount = queryByBranchMinMax.Count();
                 Items[i].BranchCount = queryByBranchMinMax.GroupBy(p => p.BranchCode).Count();
 
-                //var bgForCurrent = new BackgroundWorker();                
-                //bgForCurrent.DoWork += (s, e) =>
-                //{
-                //    var workItem = (AdjustBranchResult)e.Argument;
-                //    CalcuateCompareToPrevious(workItem.Worker, Convert.ToInt16(workItem.MinBranch), Convert.ToInt16(workItem.MaxBranch));
-                //};
-                //bgForCurrent.RunWorkerAsync(Items[i]);
-
                 if ((i + 1) < Items.Count)
                 {
                     var nextBranch = Items[i + 1];
                     nextBranch.MinBranch = (Convert.ToInt16(Items[i].MaxBranch) + 1).ToString("0000");
-
-                    //var bg = new BackgroundWorker();
-                    //bg.DoWork += (s, e) =>
-                    //{
-                    //    var workItem = (AdjustBranchResult)e.Argument;
-                    //    CalcuateCompareToPrevious(workItem.Worker, Convert.ToInt16(workItem.MinBranch), Convert.ToInt16(workItem.MaxBranch));                        
-                    //};
-                    //bg.RunWorkerAsync(nextBranch);
                 }
             }
         }
