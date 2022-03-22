@@ -1,4 +1,5 @@
-﻿using BranchAdjustor.File;
+﻿using BranchAdjustor.Commands;
+using BranchAdjustor.File;
 using ExcelDataReader;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace BranchAdjustor
         private int disputePerWorkerCount;
         private int totalBranchCount;
         private double autoAdjustPercent;
-        private string disputeType = "ATM";
+        private string disputeType = "unselected";
         private string disputeFilePath;
         private bool isEnableSlider;
         private string statusMessage;
@@ -222,6 +223,8 @@ namespace BranchAdjustor
         public ICommand AutoAdjustCommand { get; set; }
 
         public ICommand AdjustCommand { get; set; }
+
+        public ICommand CopyToClipboardCommand { get; set; }
         #endregion
 
         public MainWindowContext()
@@ -232,6 +235,7 @@ namespace BranchAdjustor
             LoadDisputeCommand = new LoadDisputeCommand();
             AutoAdjustCommand = new AutoAdjustCommand();
             AdjustCommand = new AdjustCommand();
+            CopyToClipboardCommand = new CopyToClipboardCommand();
         }
 
         public async Task LoadAsync(string disputeType, bool freshReload = false)
@@ -285,6 +289,7 @@ namespace BranchAdjustor
                     ((AutoAdjustCommand)AutoAdjustCommand).DisputeRecords = disputeRecords;
                     ((AutoAdjustCommand)AutoAdjustCommand).DisputeType = DisputeType;
                     ((AdjustCommand)AdjustCommand).AdjustBranchResults = Items;
+                    ((CopyToClipboardCommand)CopyToClipboardCommand).AdjustBranchResults = Items;
                 });
             });
         }

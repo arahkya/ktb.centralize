@@ -81,16 +81,36 @@
         <Menu Grid.Row="7" Grid.ColumnSpan="3" Margin="0 10 0 0" Padding="4">
             <MenuItem Header="Reload" Command="{Binding LoadDisputeCommand}"></MenuItem>
             <MenuItem Header="Auto Adjust" Command="{Binding AutoAdjustCommand}"></MenuItem>
+            <MenuItem Header="Copy to Clipboard" Command="{Binding CopyToClipboardCommand}"></MenuItem>
             <MenuItem Header="+" Command="{Binding AdjustCommand}" CommandParameter="+" Style="{StaticResource manualAdjustMenuItem}"></MenuItem>
-            <MenuItem Header="-" Command="{Binding AdjustCommand}" CommandParameter="-" Style="{StaticResource manualAdjustMenuItem}"></MenuItem>
+            <MenuItem Header="-" Command="{Binding AdjustCommand}" CommandParameter="-" Style="{StaticResource manualAdjustMenuItem}"></MenuItem>            
         </Menu>
-        
+
         <DataGrid Grid.Row="8" Grid.ColumnSpan="3" SelectionMode="Single" MouseDoubleClick="dgAdjustResult_MouseDoubleClick" AreRowDetailsFrozen="True" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedItem="{Binding SelectedAdjustBranchResult}" ItemsSource="{Binding Items, Mode=TwoWay}" x:Name="dgAdjustResult">
         </DataGrid>
 
         <StatusBar Grid.Row="9" Grid.ColumnSpan="3">
+            <StatusBarItem>                
+                <TextBlock Text="{Binding DisputeType, StringFormat={}Process on {0}}">
+                    <TextBlock.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DisputeType}" Value="unselected">
+                                    <Setter Property="TextBlock.Visibility" Value="Hidden"></Setter>                                    
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding DisputeType}" Value="ATM">
+                                    <Setter Property="TextBlock.Visibility" Value="Visible"></Setter>                                    
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding DisputeType}" Value="RCM">
+                                    <Setter Property="TextBlock.Visibility" Value="Visible"></Setter>
+                                </DataTrigger>                                
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Grid.Column="1" Orientation="Horizontal">                    
                     <TextBlock Text="{Binding StatusMessage}"></TextBlock>
                     <ProgressBar IsIndeterminate="{Binding IsProcessing}" Height="20" Width="300"></ProgressBar>
                 </StackPanel>

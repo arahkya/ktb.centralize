@@ -52,6 +52,9 @@ namespace BranchAdjustor
             MessageBox.Show(message, "Error",MessageBoxButton.OK,MessageBoxImage.Error, MessageBoxResult.OK,MessageBoxOptions.ServiceNotification);
         }
 
-        
+        public void ShowInfo(string message)
+        {
+            MessageBox.Show(message, "Infomation", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+        }
     }
 }
