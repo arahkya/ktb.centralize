@@ -23,6 +23,19 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
+
+            <Style x:Key="GroupHeaderStyle" TargetType="{x:Type GroupItem}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type GroupItem}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}"></TextBlock>
+                                <ItemsPresenter></ItemsPresenter>
+                            </StackPanel>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -87,11 +100,53 @@
             <MenuItem Header="-" Command="{Binding AdjustCommand}" CommandParameter="-" Style="{StaticResource manualAdjustMenuItem}"></MenuItem>            
         </Menu>
 
-        <DataGrid Grid.Row="8" Grid.ColumnSpan="3" SelectionMode="Single" MouseDoubleClick="dgAdjustResult_MouseDoubleClick" AreRowDetailsFrozen="True" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedItem="{Binding SelectedAdjustBranchResult}" ItemsSource="{Binding Items, Mode=TwoWay}" x:Name="dgAdjustResult">
+        <DataGrid Grid.Row="8" Grid.ColumnSpan="3" SelectionMode="Single" MouseDoubleClick="dgAdjustResult_MouseDoubleClick" AreRowDetailsFrozen="True" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedItem="{Binding SelectedAdjustBranchResult}" ItemsSource="{Binding Items, Mode=TwoWay}" x:Name="dgAdjustResult">
         </DataGrid>
 
-        <DataGrid Grid.Row="1" Grid.RowSpan="11" Grid.Column="3" Margin="10 0 0 0" SelectionMode="Extended" AreRowDetailsFrozen="True" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding CompareToPreviousMonths, Mode=TwoWay}">
+        <DataGrid Grid.Row="1" Grid.RowSpan="11" Grid.Column="3" Margin="10 0 0 0" SelectionMode="Extended" AreRowDetailsFrozen="True" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding CompareToPreviousItems, Mode=TwoWay}" AutoGenerateColumns="False">
+            <DataGrid.GroupStyle>
+                <GroupStyle ContainerStyle="{StaticResource GroupHeaderStyle}">
+                    <GroupStyle.Panel>
+                        <ItemsPanelTemplate>
+                            <DataGridRowsPresenter></DataGridRowsPresenter>
+                        </ItemsPanelTemplate>
+                    </GroupStyle.Panel>
+                </GroupStyle>
+            </DataGrid.GroupStyle>
+
+            <DataGrid.Columns>
+                <!--<DataGridTextColumn Header="Month-Year" Binding="{Binding MonthYear}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>-->
+                <DataGridTextColumn Header="Worker" Binding="{Binding Worker}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Center" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Dispute Count" Binding="{Binding DisputeCount}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Dispute Percentage" Binding="{Binding Percentage, StringFormat={}{0:0.00} %}">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
         </DataGrid>
+        <!--<DataGrid Grid.Row="1" Grid.RowSpan="11" Grid.Column="3" Margin="10 0 0 0" SelectionMode="Extended" AreRowDetailsFrozen="True" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ItemsSource="{Binding CompareToPreviousMonths, Mode=TwoWay}">
+        </DataGrid>-->
 
         <StatusBar Grid.Row="10" Grid.ColumnSpan="3">
             <StatusBarItem>                

@@ -19,6 +19,7 @@ namespace BranchAdjustor.Models
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Worker)));
             }
         }
+        public string MonthYear => $"{year}-{month}";
         public int Month
         {
             get { return month; }

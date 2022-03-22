@@ -11,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 
 #nullable disable
@@ -41,6 +42,8 @@ namespace BranchAdjustor
 
         #region Properties
         public ObservableCollection<AdjustBranchResult> Items { get; set; }
+
+        public ListCollectionView CompareToPreviousItems { get; set; }
 
         public ObservableCollection<CompareToPreviousMonth> CompareToPreviousMonths { get; set; }
 
@@ -236,6 +239,9 @@ namespace BranchAdjustor
             autoAdjustPercent = 0.5f;
             Items = new ObservableCollection<AdjustBranchResult>();
             CompareToPreviousMonths = new ObservableCollection<CompareToPreviousMonth>();
+            CompareToPreviousItems = new ListCollectionView(CompareToPreviousMonths);
+            CompareToPreviousItems.GroupDescriptions.Add(new PropertyGroupDescription("MonthYear"));
+
             OpenFileCommand = new OpenFileCommand();
             LoadDisputeCommand = new LoadDisputeCommand();
             AutoAdjustCommand = new AutoAdjustCommand();
@@ -306,7 +312,7 @@ namespace BranchAdjustor
 
         public void Recalculate()
         {
-            for (int i = 0; i < Items.Count; i++)
+            for (int i = 0; i < Items.Count - 1; i++)
             {
                 var queryByBranchMinMax = disputeRecords.Where(p =>
                     !string.IsNullOrEmpty(p.BranchCode) &&
@@ -316,8 +322,27 @@ namespace BranchAdjustor
                 Items[i].DisputeCount = queryByBranchMinMax.Count();
                 Items[i].BranchCount = queryByBranchMinMax.GroupBy(p => p.BranchCode).Count();
 
+                //var bgForCurrent = new BackgroundWorker();                
+                //bgForCurrent.DoWork += (s, e) =>
+                //{
+                //    var workItem = (AdjustBranchResult)e.Argument;
+                //    CalcuateCompareToPrevious(workItem.Worker, Convert.ToInt16(workItem.MinBranch), Convert.ToInt16(workItem.MaxBranch));
+                //};
+                //bgForCurrent.RunWorkerAsync(Items[i]);
+
                 if ((i + 1) < Items.Count)
-                    Items[i + 1].MinBranch = (Convert.ToInt16(Items[i].MaxBranch) + 1).ToString("0000");
+                {
+                    var nextBranch = Items[i + 1];
+                    nextBranch.MinBranch = (Convert.ToInt16(Items[i].MaxBranch) + 1).ToString("0000");
+
+                    //var bg = new BackgroundWorker();
+                    //bg.DoWork += (s, e) =>
+                    //{
+                    //    var workItem = (AdjustBranchResult)e.Argument;
+                    //    CalcuateCompareToPrevious(workItem.Worker, Convert.ToInt16(workItem.MinBranch), Convert.ToInt16(workItem.MaxBranch));                        
+                    //};
+                    //bg.RunWorkerAsync(nextBranch);
+                }
             }
         }
 
@@ -354,6 +379,23 @@ namespace BranchAdjustor
 
                     CompareToPreviousMonths.Add(itemSet);
                 }
+            }
+        }
+
+        public void CalcuateCompareToPrevious(string worker, int minBranch, int maxBranch)
+        {
+            var currentCompareToPrevious = CompareToPreviousMonths.Where(p => p.Worker == worker);
+            foreach (var item in currentCompareToPrevious)
+            {
+                var startDate = new DateTime(item.Year, item.Month, 1, 0, 0, 0);
+                var endDate = new DateTime(item.Year, item.Month, DateTime.DaysInMonth(item.Year, item.Month), 0, 0, 0);
+
+                item.DisputeCount = disputeRecords.Where(p => (p.CreateDate > startDate && p.CreateDate <= endDate)
+                    && (Convert.ToInt16(p.BranchCode) >= Convert.ToInt16(minBranch)
+                    && Convert.ToInt16(p.BranchCode) <= Convert.ToInt16(maxBranch))).Count();
+
+                var totalDisputeInMonthYear = disputeRecords.Where(p => (p.CreateDate > startDate && p.CreateDate <= endDate)).Count();
+                item.Percentage = Math.Round((Convert.ToDouble(item.DisputeCount) / totalDisputeInMonthYear) * 100, 2);
             }
         }
     }

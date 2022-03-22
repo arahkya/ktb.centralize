@@ -45,26 +45,22 @@ namespace BranchAdjustor
                 selectedDataGridItem.MaxBranch = (maxBranch + 1).ToString("0000");            
             }
 
-            if (selectedDataGridItem != null && parameter.ToString() == "-")
+            if (selectedDataGridItem != null && parameter.ToString() == "-" && Convert.ToInt16(selectedDataGridItem.MaxBranch) > Convert.ToInt16(selectedDataGridItem.MinBranch))
             {
                 selectedDataGridItem.MaxBranch = (maxBranch - 1).ToString("0000");
             }
 
             mainWindowContext.Recalculate();
 
-            var currentCompareToPrevious = CompareToPreviousMonths.Where(p => p.Worker == selectedDataGridItem.Worker);
-            foreach (var item in currentCompareToPrevious)
+            MainWindow.Instance.Dispatcher.Invoke(() =>
             {
-                var startDate = new DateTime(item.Year, item.Month, 1, 0, 0, 0);
-                var endDate = new DateTime(item.Year, item.Month, DateTime.DaysInMonth(item.Year, item.Month), 0, 0, 0);
-
-                item.DisputeCount = DisputeRecords.Where(p => (p.CreateDate > startDate && p.CreateDate <= endDate)
-                    && (Convert.ToInt16(p.BranchCode) >= Convert.ToInt16(selectedDataGridItem.MinBranch)
-                    && Convert.ToInt16(p.BranchCode) <= Convert.ToInt16(selectedDataGridItem.MaxBranch))).Count();
-
-                var totalDisputeInMonthYear = DisputeRecords.Where(p => (p.CreateDate > startDate && p.CreateDate <= endDate)).Count();
-                item.Percentage = Math.Round((Convert.ToDouble(item.DisputeCount) / totalDisputeInMonthYear) * 100, 2);
-            }
+                mainWindowContext.IsProcessing = true;
+                foreach (var item in mainWindowContext.Items)
+                {
+                    ((MainWindowContext)MainWindow.Instance.DataContext).CalcuateCompareToPrevious(item.Worker, Convert.ToInt16(item.MinBranch), Convert.ToInt16(item.MaxBranch));
+                }
+                mainWindowContext.IsProcessing = false;
+            });
         }
     }
 }

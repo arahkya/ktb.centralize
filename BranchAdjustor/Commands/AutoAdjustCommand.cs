@@ -74,29 +74,19 @@ namespace BranchAdjustor
                         }
                     }
 
-                    CalcuateCompareToPrevious(currentItem.Worker, Convert.ToInt16(currentItem.MinBranch), Convert.ToInt16(currentItem.MaxBranch));
                 }
+
+                MainWindow.Instance.Dispatcher.Invoke(() =>
+                {
+                    foreach (var item in mainWindowContext.Items)
+                    {
+                        ((MainWindowContext)MainWindow.Instance.DataContext).CalcuateCompareToPrevious(item.Worker, Convert.ToInt16(item.MinBranch), Convert.ToInt16(item.MaxBranch));
+                    }
+                });
 
                 mainWindowContext.IsProcessing = false;
                 mainWindowContext.StatusMessage = String.Empty;
             });
-        }
-
-        private void CalcuateCompareToPrevious(string worker, int minBranch, int maxBranch)
-        {
-            var currentCompareToPrevious = CompareToPreviousMonths.Where(p => p.Worker == worker);
-            foreach (var item in currentCompareToPrevious)
-            {
-                var startDate = new DateTime(item.Year, item.Month, 1, 0, 0, 0);
-                var endDate = new DateTime(item.Year, item.Month, DateTime.DaysInMonth(item.Year, item.Month), 0, 0, 0);
-
-                item.DisputeCount = DisputeRecords.Where(p => (p.CreateDate > startDate && p.CreateDate <= endDate)
-                    && (Convert.ToInt16(p.BranchCode) >= Convert.ToInt16(minBranch)
-                    && Convert.ToInt16(p.BranchCode) <= Convert.ToInt16(maxBranch))).Count();
-
-                var totalDisputeInMonthYear = DisputeRecords.Where(p => (p.CreateDate > startDate && p.CreateDate <= endDate)).Count();
-                item.Percentage = Math.Round((Convert.ToDouble(item.DisputeCount) / totalDisputeInMonthYear) * 100, 2);
-            }
         }
     }
 }
