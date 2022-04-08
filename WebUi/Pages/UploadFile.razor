@@ -110,7 +110,7 @@ else if (!string.IsNullOrEmpty(fileName) && string.IsNullOrEmpty(fileErrorMessag
 
         await Task.Delay(100);
 
-        var url = "https://localhost:7263/filemanager";
+        var url = "http://localhost:5263/filemanager";
         var json = await CreateFileUploadModelRequestAsync();
         var stringContent = new StringContent(json, Encoding.Default, "application/json");
         var request = new HttpRequestMessage(HttpMethod.Post, url);

@@ -1,17 +1,9 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("development",
-    builder =>
-    {
-        builder.WithOrigins("https://localhost:7263")
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-            //.WithMethods("GET, PATCH, DELETE, PUT, POST, OPTIONS");
-    });
+builder.WebHost.UseKestrel(kestrelOption => {
+    kestrelOption.ListenLocalhost(5263);
 });
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
