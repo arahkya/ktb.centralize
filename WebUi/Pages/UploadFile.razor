@@ -1,0 +1,135 @@
+﻿@page "/upload"
+@using System.IO
+@using System.Text
+@using System.Text.Json
+@using System.Net.Http
+@using System.Net.Http.Headers
+@using WebLibrary
+@inject HttpClient httpClient
+
+<PageTitle>Upload File</PageTitle>
+
+<h1>Upload File</h1>
+<p>Must be excel file with extension name ".xlsx" and file size not over @((fileSizeLimit / 1024f) / 1024f)MB.</p>
+
+<div class="form-control mb-3">
+    <label class="form-label">ATM and RCM Dispute file</label>
+    <InputFile class="form-control" OnChange="@OnInputFile_Changed" accept=".xlsx" disabled="@isProcessing"></InputFile>
+    @if (!string.IsNullOrEmpty(fileErrorMessage))
+    {
+        <span class="validation-message">@fileErrorMessage</span>
+    }
+</div>
+@if (isProcessing)
+{
+    <img src="loading-loading-symbol.gif" width="20" />
+}
+else if (isFileUploaded)
+{
+    <span>Upload Done</span>
+}
+else if (!string.IsNullOrEmpty(fileName) && string.IsNullOrEmpty(fileErrorMessage))
+{
+    <button type="button" class="btn btn-primary" @onclick="OnPostButton_Clicked">Post file</button>
+}
+
+@code {
+    private bool isProcessing = false;
+    private string fileName = string.Empty;
+    private string fileExtension = string.Empty;
+    private string fileErrorMessage = string.Empty;
+    private byte[] fileBytes = Array.Empty<byte>();
+    private bool isFileUploaded = false;
+    private int fileSizeLimit = 31457280;
+
+    private void ValidateBeforePost(IBrowserFile file)
+    {
+        if (file.Size > fileSizeLimit)
+        {
+            fileErrorMessage = "File size over limit.";
+            isProcessing = false;
+            return;
+        }
+        else
+        {
+            fileErrorMessage = string.Empty;
+        }
+    }
+
+    private async Task OnInputFile_Changed(InputFileChangeEventArgs e)
+    {
+        isProcessing = true;
+        isFileUploaded = false;
+
+        ValidateBeforePost(e.File);
+
+        var fs = e.File.OpenReadStream(maxAllowedSize: fileSizeLimit);
+        var ms = new MemoryStream();
+        var buffer = new byte[16 * 1024];
+        var index = 0;
+
+        while ((index = await fs.ReadAsync(buffer, 0, buffer.Length)) > 0)
+        {
+            ms.Write(buffer, 0, index);
+        }
+
+        fileBytes = ms.ToArray();
+        fileName = Path.GetFileNameWithoutExtension(e.File.Name);
+        fileExtension = Path.GetExtension(e.File.Name);
+
+        isProcessing = false;
+    }
+
+    private async Task<string> CreateFileUploadModelRequestAsync()
+    {
+        var json = string.Empty;
+        var model = new FilePostModel
+            {
+                Content = fileBytes,
+                FileName = fileName,
+                FileExtension = fileExtension
+            };
+
+        using (var sm = new MemoryStream())
+        {
+            await JsonSerializer.SerializeAsync<FilePostModel>(sm, model);
+            sm.Position = 0;
+
+            using (var sr = new StreamReader(sm))
+            {
+                json = await sr.ReadToEndAsync();
+            }
+        }
+
+        return json;
+    }
+
+    private async Task OnPostButton_Clicked()
+    {
+        isProcessing = true;
+
+        await Task.Delay(100);
+
+        var url = "https://localhost:7263/filemanager";
+        var json = await CreateFileUploadModelRequestAsync();
+        var stringContent = new StringContent(json, Encoding.Default, "application/json");
+        var request = new HttpRequestMessage(HttpMethod.Post, url);
+
+        request.Content = stringContent;
+
+        try
+        {
+            var response = await httpClient.SendAsync(request);
+
+            isFileUploaded = true;
+        }
+        catch (Exception ex)
+        {
+            fileErrorMessage = ex.Message;
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+}

@@ -3,9 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReadExcelFilePocConsoleApp", "ReadExcelFilePocConsoleApp\ReadExcelFilePocConsoleApp.csproj", "{0059828D-3520-485C-99C1-2DF433F93E88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReadExcelFilePocConsoleApp", "ReadExcelFilePocConsoleApp\ReadExcelFilePocConsoleApp.csproj", "{0059828D-3520-485C-99C1-2DF433F93E88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BranchAdjustor", "BranchAdjustor\BranchAdjustor.csproj", "{942F1656-9B77-43FF-8DFE-179B263741D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BranchAdjustor", "BranchAdjustor\BranchAdjustor.csproj", "{942F1656-9B77-43FF-8DFE-179B263741D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "WebApi\WebApi.csproj", "{B23098D3-0527-449F-9711-00FE3E4E186D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebUi", "WebUi\WebUi.csproj", "{B046E6A3-5594-4DAB-BCFA-672509FB93F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebLibrary", "WebLibrary\WebLibrary.csproj", "{A7743A15-36E5-42DD-9568-AE684C6301FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +27,18 @@ Global
 		{942F1656-9B77-43FF-8DFE-179B263741D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{942F1656-9B77-43FF-8DFE-179B263741D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{942F1656-9B77-43FF-8DFE-179B263741D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B23098D3-0527-449F-9711-00FE3E4E186D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B23098D3-0527-449F-9711-00FE3E4E186D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B23098D3-0527-449F-9711-00FE3E4E186D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B23098D3-0527-449F-9711-00FE3E4E186D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B046E6A3-5594-4DAB-BCFA-672509FB93F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B046E6A3-5594-4DAB-BCFA-672509FB93F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B046E6A3-5594-4DAB-BCFA-672509FB93F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B046E6A3-5594-4DAB-BCFA-672509FB93F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7743A15-36E5-42DD-9568-AE684C6301FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7743A15-36E5-42DD-9568-AE684C6301FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7743A15-36E5-42DD-9568-AE684C6301FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7743A15-36E5-42DD-9568-AE684C6301FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
