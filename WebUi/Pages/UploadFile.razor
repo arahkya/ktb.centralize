@@ -25,9 +25,29 @@
 }
 else if (IsFileUploaded)
 {
-    <span>Upload Done</span>
+    <span>@StatusMessage</span>
 }
 else if (FileUpload != null && string.IsNullOrEmpty(FileErrorMessage))
 {
     <button type="button" class="btn btn-primary" onclick="@Upload">Post file</button>
 }
+
+<table>
+    <thead>
+        <tr>
+            <th>Branch</th>
+            <th>Terminal Id</th>
+            <th>Transaction Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Items)
+        {
+            <tr>
+                <td>@item.BranchCode</td>
+                <td>@item.TerminalId</td>
+                <td>@item.TransactionDate</td>
+            </tr>
+        }
+    </tbody>
+</table>

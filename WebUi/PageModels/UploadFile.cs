@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components;
@@ -10,6 +11,7 @@ namespace WebUi.Pages
     {
         private long fileSizeLimit = 31457280;
         private IBrowserFile? fileUpload;
+        private FilePostModel? filePostModel;
 
         public bool IsFileUploaded { get; set; }
         public bool IsProcessing { get; set; }
@@ -18,11 +20,12 @@ namespace WebUi.Pages
         {
             get => (fileSizeLimit / 1024) / 1024;
         }
-
-        private FilePostModel? filePostModel;
+        public string StatusMessage { get; set; } = string.Empty;
 
         [Inject]
         public HttpClient? httpClient { get; set; }
+
+        public ObservableCollection<DisputeModel> Items = new ObservableCollection<DisputeModel>();
 
         public IBrowserFile? FileUpload
         {
@@ -92,6 +95,19 @@ namespace WebUi.Pages
             var response = await httpClient.SendAsync(request);
 
             response.EnsureSuccessStatusCode();
+            
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var disputeModels = JsonSerializer.DeserializeAsyncEnumerable<DisputeModel>(responseStream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (disputeModels != null)
+            {
+                await foreach (DisputeModel? item in disputeModels)
+                {
+                    if (item == null) continue;
+             
+                    Items.Add(item);
+                }
+            }
 
             IsFileUploaded = true;
             IsProcessing = false;

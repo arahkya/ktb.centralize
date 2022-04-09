@@ -1,8 +1,13 @@
+using WebApi.Services.Dispute;
+using WebApi.Services.Excel;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.UseKestrel(kestrelOption => {
-    kestrelOption.ListenLocalhost(5263);
+   kestrelOption.ListenLocalhost(5263);
 });
+
+builder.Services.AddScoped<IFileByteImporter, DisputeFileImporter>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
