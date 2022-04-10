@@ -99,6 +99,8 @@ namespace WebUi.Pages
             var responseStream = await response.Content.ReadAsStreamAsync();
             var disputeModels = JsonSerializer.DeserializeAsyncEnumerable<DisputeModel>(responseStream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
+            
+
             if (disputeModels != null)
             {
                 await foreach (DisputeModel? item in disputeModels)

@@ -29,7 +29,7 @@ else if (IsFileUploaded)
 }
 else if (FileUpload != null && string.IsNullOrEmpty(FileErrorMessage))
 {
-    <button type="button" class="btn btn-primary" onclick="@Upload">Post file</button>
+    <button type="button" class="btn btn-primary" @onclick="Upload">Post file</button>
 }
 
 <table>
