@@ -9,20 +9,17 @@ namespace WebApi.Controllers
     [ApiController]
     [Route("[controller]")]
     public class FileManagerController : ControllerBase
-    {
-        private readonly ILogger<WeatherForecastController> _logger;
+    {        
         private readonly IFileByteImporter fileByteImporter;
 
-        public FileManagerController(ILogger<WeatherForecastController> logger,
-                                     IFileByteImporter fileByteImporter)
+        public FileManagerController(IFileByteImporter fileByteImporter)
         {
-            _logger = logger;
             this.fileByteImporter = fileByteImporter;
         }
 
         [DisableRequestSizeLimit]
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] FilePostModel viewModel)
+        public IActionResult Post([FromBody] FilePostModel viewModel)
         {
             var tupleDataTables = fileByteImporter.Import(viewModel.Content);   
             var disputeAtmTransformer = new Transformer(DisputeTypes.ATM, "Branch", "TERM_ID", "CREATE_DATE");

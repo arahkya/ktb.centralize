@@ -1,19 +1,17 @@
-using System.Collections.ObjectModel;
-using System.Text;
-using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using System.Collections.ObjectModel;
 using WebLibrary;
+using WebUi.Services;
+using WebUi.ViewModels;
 
 namespace WebUi.Pages
 {
-    public partial class UploadFile
+    public partial class UploadFile : IObserver<IEnumerable<DisputeViewModel>>
     {
-        private long fileSizeLimit = 31457280;
-        private IBrowserFile? fileUpload;
-        private FilePostModel? filePostModel;
+        private readonly long fileSizeLimit = 31457280;
+        private IBrowserFile? fileUpload;        
 
-        public bool IsFileUploaded { get; set; }
         public bool IsProcessing { get; set; }
         public string FileErrorMessage { get; set; } = string.Empty;
         public float FileSizeLimitMB
@@ -23,9 +21,13 @@ namespace WebUi.Pages
         public string StatusMessage { get; set; } = string.Empty;
 
         [Inject]
-        public HttpClient? httpClient { get; set; }
+        public FileReaderService? FileReaderService { get; set; }
 
-        public ObservableCollection<DisputeModel> Items = new ObservableCollection<DisputeModel>();
+        [Inject]
+        private DisputeManipulatorService? DisputeManipulatorService { get; set; }
+
+        [Inject]
+        private DisputeWorkerManagerService? DisputeWorkerManagerService { get; set; }        
 
         public IBrowserFile? FileUpload
         {
@@ -39,13 +41,7 @@ namespace WebUi.Pages
                     FileErrorMessage = "File size over limit.";
                     return;
                 }
-
-                filePostModel = new FilePostModel
-                {
-                    FileName = Path.GetFileNameWithoutExtension(value.Name),
-                    FileExtension = Path.GetExtension(value.Name)
-                };
-
+                
                 fileUpload = value;
             }
         }
@@ -59,60 +55,32 @@ namespace WebUi.Pages
         {
             IsProcessing = true;
 
-            if (FileUpload == null || filePostModel == null || httpClient == null) return;
+            if (FileUpload == null || FileReaderService == null || DisputeWorkerManagerService == null) return;
 
-            using var fs = FileUpload.OpenReadStream(maxAllowedSize: fileSizeLimit);
-            using var ms = new MemoryStream();
-            var buffer = new byte[16 * 1024];
-            var index = 0;
+            DisputeWorkerManagerService.Setup(5);
+            FileReaderService.Subscribe(this);
 
-            while ((index = await fs.ReadAsync(buffer, 0, buffer.Length)) > 0)
-            {
-                ms.Write(buffer, 0, index);
-            }
+            using var browserFileStream = FileUpload.OpenReadStream(maxAllowedSize: fileSizeLimit);
+            await FileReaderService.ReadFileAsync(browserFileStream);
 
-            filePostModel.Content = ms.ToArray();
-
-            var json = string.Empty;
-
-            using (var sm = new MemoryStream())
-            {
-                await JsonSerializer.SerializeAsync<FilePostModel>(sm, filePostModel);
-                sm.Position = 0;
-
-                using (var sr = new StreamReader(sm))
-                {
-                    json = await sr.ReadToEndAsync();
-                }
-            }
-
-            var url = "http://localhost:5263/filemanager";
-            var stringContent = new StringContent(json, Encoding.Default, "application/json");
-            var request = new HttpRequestMessage(HttpMethod.Post, url);
-
-            request.Content = stringContent;
-
-            var response = await httpClient.SendAsync(request);
-
-            response.EnsureSuccessStatusCode();
-            
-            var responseStream = await response.Content.ReadAsStreamAsync();
-            var disputeModels = JsonSerializer.DeserializeAsyncEnumerable<DisputeModel>(responseStream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            
-
-            if (disputeModels != null)
-            {
-                await foreach (DisputeModel? item in disputeModels)
-                {
-                    if (item == null) continue;
-             
-                    Items.Add(item);
-                }
-            }
-
-            IsFileUploaded = true;
             IsProcessing = false;
         }
+        
+        #region Observer Implement
+        public void OnCompleted()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnError(Exception error)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnNext(IEnumerable<DisputeViewModel> value)
+        {
+            StatusMessage = $"Record Read: {value.Count()}";
+        } 
+        #endregion
     }
 }

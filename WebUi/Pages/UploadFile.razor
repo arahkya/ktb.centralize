@@ -5,6 +5,7 @@
 @using System.Net.Http
 @using System.Net.Http.Headers
 @using WebLibrary
+@using WebUi.ViewModels
 
 <PageTitle>Upload File</PageTitle>
 
@@ -13,7 +14,7 @@
 
 <div class="form-control mb-3">
     <label class="form-label">ATM and RCM Dispute file</label>
-    <InputFile class="form-control" accept=".xlsx" OnChange="@OnInputFile_Changed" disabled="@IsProcessing"></InputFile>
+    <InputFile class="form-control" accept=".csv" OnChange="@OnInputFile_Changed" disabled="@IsProcessing"></InputFile>
     @if (!string.IsNullOrEmpty(FileErrorMessage))
     {
         <span class="validation-message">@FileErrorMessage</span>
@@ -23,31 +24,80 @@
 {
     <img src="loading-loading-symbol.gif" width="20" />
 }
-else if (IsFileUploaded)
-{
-    <span>@StatusMessage</span>
-}
 else if (FileUpload != null && string.IsNullOrEmpty(FileErrorMessage))
 {
     <button type="button" class="btn btn-primary" @onclick="Upload">Post file</button>
 }
-
-<table>
-    <thead>
-        <tr>
-            <th>Branch</th>
-            <th>Terminal Id</th>
-            <th>Transaction Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Items)
-        {
-            <tr>
-                <td>@item.BranchCode</td>
-                <td>@item.TerminalId</td>
-                <td>@item.TransactionDate</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="row">
+    <div class="col-4">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Branch</th>
+                    <th>ATM Errors</th>
+                    <th>RCM Errors</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in DisputeManipulatorService?.Groups ?? Enumerable.Empty<DisputeGroupByBranchViewModel>())
+                {
+                    <tr>
+                        <td>@item.Branch</td>
+                        <td>@item.ATMErrorCount</td>
+                        <td>@item.RCMErrorCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-4">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Worker</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Count</th>
+                    <th>ATM Error</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in DisputeWorkerManagerService?.WorkersATM ?? Enumerable.Empty<DisputeWorkerViewModel>())
+                {
+                    <tr>
+                        <td>@item.WorkerNumber</td>
+                        <td>@item.BranchRange.Start</td>
+                        <td>@item.BranchRange.End</td>
+                        <td>@item.BranchCount</td>
+                        <td>@item.ErrorCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-4">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Worker</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Count</th>
+                    <th>RCM Error</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in DisputeWorkerManagerService?.WorkersRCM ?? Enumerable.Empty<DisputeWorkerViewModel>())
+                {
+                    <tr>
+                        <td>@item.WorkerNumber</td>
+                        <td>@item.BranchRange.Start</td>
+                        <td>@item.BranchRange.End</td>
+                        <td>@item.BranchCount</td>
+                        <td>@item.ErrorCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
