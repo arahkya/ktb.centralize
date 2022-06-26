@@ -274,20 +274,54 @@ namespace BranchAdjustor
                 this.TotalBranchCount = disputeRecords.DistinctBy(p => p.BranchCode).Count();
                 this.BranchPerWorkerCount = this.TotalBranchCount / this.WorkerNumber;
 
-                var disputeGroupByBranch = disputeRecords.GroupBy(p => p.BranchCode).Where(p => p.Key != String.Empty).OrderBy(p => p.Key).Chunk(this.BranchPerWorkerCount).ToList();
+                var disputeRecordsChankList = disputeRecords.GroupBy(p => p.BranchCode)
+                                            .Where(p => p.Key != String.Empty)
+                                            .OrderBy(p => p.Key)
+                                            .Select(p => new KeyValuePair<string, DisputeRecord[]>(p.Key, p.ToArray()))
+                                            .ToList();
+                //.Chunk(this.BranchPerWorkerCount);                                            
+
+                Dictionary<string, DisputeRecord[]>[] disputeGroupByBranch = new Dictionary<string, DisputeRecord[]>[this.WorkerNumber];
+                int workBranchsIndex = 0;
+
+                Dictionary<string, DisputeRecord[]> workerBranchs = new Dictionary<string, DisputeRecord[]>();
+                for (int i = 0; i < disputeRecordsChankList.Count(); i++)
+                {
+                    workerBranchs.Add(disputeRecordsChankList[i].Key, disputeRecordsChankList[i].Value);
+
+                    if (workerBranchs.Count == BranchPerWorkerCount)
+                    {
+                        disputeGroupByBranch[workBranchsIndex] = workerBranchs;
+                        workerBranchs = new Dictionary<string, DisputeRecord[]>();
+                        workBranchsIndex++;
+                    }
+                }
+
+                if(disputeGroupByBranch.Sum(p => p.Count) < disputeRecordsChankList.Count())
+                {
+                    var sed = disputeRecordsChankList.Count() - disputeGroupByBranch.Sum(p => p.Count);
+                    var sedDisputeRecords = disputeRecordsChankList.Skip(disputeGroupByBranch.Sum(p => p.Count)).Take(sed);
+
+                    foreach (var sedItem in sedDisputeRecords)
+                    {
+                        disputeGroupByBranch.Last().Add(sedItem.Key, sedItem.Value);
+                    }
+                }
 
                 MainWindow.Instance.Dispatcher.Invoke(() =>
                 {
                     for (int i = 0; i < disputeGroupByBranch.Count(); i++)
                     {
                         var group = disputeGroupByBranch.ToList()[i];
+                        var minBranch = group.First().Key;
+                        var maxBranch = group.Last().Key;
                         var adjustBranchResult = new AdjustBranchResult
                         {
                             Worker = (i + 1).ToString(),
-                            BranchCount = group.Length,
-                            DisputeCount = group.Sum(p => p.Count()),
-                            MinBranch = group.First().Key,
-                            MaxBranch = group.Last().Key
+                            DisputeCount = group.Sum(p => p.Value.Count()),
+                            MinBranch = minBranch,
+                            MaxBranch = maxBranch,
+                            BranchCount = Convert.ToInt16(maxBranch) - Convert.ToInt16(minBranch)
                         };
 
                         this.Items.Add(adjustBranchResult);

@@ -17,14 +17,14 @@ namespace BranchAdjustor
     /// </summary>
     public partial class App : Application
     {
-        protected async override void OnStartup(StartupEventArgs e)
+        protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            await LoadSettingFromFileAsync();
+            LoadSettingFromFile();
         }
 
-        public async Task LoadSettingFromFileAsync()
+        public void LoadSettingFromFile()
         {
             var filePath = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "config.ktb");
 

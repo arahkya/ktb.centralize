@@ -28,7 +28,7 @@ namespace BranchAdjustor
             var hasDispute = DisputeRecords != null && DisputeRecords.Any();
 
             return hasDispute;
-        }
+        }        
 
         public async void Execute(object parameter)
         {
@@ -42,39 +42,7 @@ namespace BranchAdjustor
 
             await Task.Run(() =>
             {
-                var minGain = mainWindowContext.DisputePerWorkerCount;
-                for (int i = 0; i < mainWindowContext.Items.Count; i++)
-                {
-                    var currentItem = mainWindowContext.Items[i];
-
-                    if (i == mainWindowContext.Items.Count - 1)
-                    {
-                        currentItem.MaxBranch = mainWindowContext.BranchMinMax.Split('-')[1];
-                        mainWindowContext.Recalculate();
-                    }
-                    else
-                    {
-                        if (currentItem.DisputeCount < minGain)
-                        {
-                            do
-                            {
-                                var maxBranch = Convert.ToInt16(currentItem.MaxBranch) + 1;
-                                currentItem.MaxBranch = maxBranch.ToString("0000");
-                                mainWindowContext.Recalculate();
-                            } while (currentItem.DisputeCount < minGain);
-                        }
-                        else
-                        {
-                            do
-                            {
-                                var maxBranch = Convert.ToInt16(currentItem.MaxBranch) - 1;
-                                currentItem.MaxBranch = maxBranch.ToString("0000");
-                                mainWindowContext.Recalculate();
-                            } while (currentItem.DisputeCount > minGain && Convert.ToInt16(currentItem.MaxBranch) > Convert.ToInt16(currentItem.MinBranch));
-                        }
-                    }
-
-                }
+                CalculateAsync(mainWindowContext.Items, mainWindowContext.DisputePerWorkerCount);
 
                 MainWindow.Instance.Dispatcher.Invoke(() =>
                 {
@@ -87,6 +55,51 @@ namespace BranchAdjustor
                 mainWindowContext.IsProcessing = false;
                 mainWindowContext.StatusMessage = String.Empty;
             });
+        }
+
+        private void CalculateAsync(ObservableCollection<AdjustBranchResult> items, int gain)
+        {
+            int lastBranch = Convert.ToInt16(DisputeRecords.DistinctBy(p => p.BranchCode).OrderByDescending(p => Convert.ToInt16(p.BranchCode)).First().BranchCode);
+            for (int i = 0; i < items.Count; i++)
+            {
+                AdjustItem(items[i], gain, lastBranch);
+
+                if (i < items.Count - 1)
+                    items[i + 1].MinBranch = (Convert.ToInt16(items[i].MaxBranch) + 1).ToString("0000");
+            }
+        }
+
+        private void AdjustItem(AdjustBranchResult item, int gain, int lastBranch)
+        {
+            int maxBranch = Convert.ToInt16(item.MaxBranch);
+            void incrMaxBranch() => maxBranch++;
+            void decrMaxBranch() => maxBranch--;
+            void calcuateDispute()
+            {
+                item.MaxBranch = maxBranch.ToString("0000");
+                item.DisputeCount = DisputeRecords.Count(p => Convert.ToInt16(p.BranchCode) >= Convert.ToInt16(item.MinBranch) && Convert.ToInt16(p.BranchCode) <= Convert.ToInt16(item.MaxBranch));
+                item.BranchCount = Convert.ToInt16(item.MaxBranch) - Convert.ToInt16(item.MinBranch);
+            }
+
+            if ((item.DisputeCount <= gain + 50 && item.DisputeCount >= gain - 50) || maxBranch == lastBranch)
+            {
+                calcuateDispute();
+                return;
+            }            
+
+            if (item.DisputeCount >= gain)
+            {
+                decrMaxBranch();
+            }
+            else if (item.DisputeCount <= gain) 
+            {
+                if (maxBranch < lastBranch)
+                    incrMaxBranch();
+            }
+
+            calcuateDispute();
+
+            AdjustItem(item, gain, lastBranch);
         }
     }
 }
