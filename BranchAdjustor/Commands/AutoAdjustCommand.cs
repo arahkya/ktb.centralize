@@ -28,7 +28,7 @@ namespace BranchAdjustor
             var hasDispute = DisputeRecords != null && DisputeRecords.Any();
 
             return hasDispute;
-        }        
+        }
 
         public async void Execute(object parameter)
         {
@@ -79,19 +79,21 @@ namespace BranchAdjustor
                 item.MaxBranch = maxBranch.ToString("0000");
                 item.DisputeCount = DisputeRecords.Count(p => Convert.ToInt16(p.BranchCode) >= Convert.ToInt16(item.MinBranch) && Convert.ToInt16(p.BranchCode) <= Convert.ToInt16(item.MaxBranch));
                 item.BranchCount = Convert.ToInt16(item.MaxBranch) - Convert.ToInt16(item.MinBranch);
+                item.MachineCount = DisputeRecords.Where(p => p.BranchNumber >= Convert.ToInt16(item.MinBranch) && p.BranchNumber <= maxBranch)
+                    .GroupBy(p => p.MachineNumber).Count();
             }
 
             if ((item.DisputeCount <= gain + 50 && item.DisputeCount >= gain - 50) || maxBranch == lastBranch)
             {
                 calcuateDispute();
                 return;
-            }            
+            }
 
             if (item.DisputeCount >= gain)
             {
                 decrMaxBranch();
             }
-            else if (item.DisputeCount <= gain) 
+            else if (item.DisputeCount <= gain)
             {
                 if (maxBranch < lastBranch)
                     incrMaxBranch();

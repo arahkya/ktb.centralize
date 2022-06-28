@@ -1,4 +1,7 @@
-﻿using System.ComponentModel;
+﻿using BranchAdjustor.Models;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 #nullable disable
 
@@ -9,9 +12,11 @@ namespace BranchAdjustor
         private string minBranch;
         private string maxBranch;
         private int branchCount;
+        private int machineCount;
         private int disputeCount;
 
         public string Worker { get; set; }
+
         public string MinBranch
         {
             get
@@ -51,6 +56,19 @@ namespace BranchAdjustor
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(branchCount)));
             }
         }
+        public int MachineCount
+        {
+            get
+            {
+                return machineCount;
+            }
+            set
+            {
+                machineCount = value;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MachineCount)));
+            }
+        }
         public int DisputeCount
         {
             get
@@ -64,6 +82,7 @@ namespace BranchAdjustor
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DisputeCount)));
             }
         }
+        
 
         public event PropertyChangedEventHandler PropertyChanged;
     }
